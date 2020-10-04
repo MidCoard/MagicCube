@@ -2,3 +2,4 @@ cmake-build-debug
 include
 lib
 glad.c
+.idea
