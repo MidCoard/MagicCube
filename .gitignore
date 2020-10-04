@@ -1,4 +1,4 @@
 cmake-build-debug
 include
 lib
-glad.c
+include/src/glad.c

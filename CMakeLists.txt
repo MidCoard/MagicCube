@@ -10,9 +10,7 @@ endif()
 if (NOT DEFINED ENV{GLAD_HOME})
     message(FATAL_ERROR "found no env named GLAD_HOME")
 endif()
-if (APPLE) {
 
-}
 # 暂存环境变量
 set(GLFW_HOME $ENV{GLFW_HOME})
 set(GLAD_HOME $ENV{GLAD_HOME})
@@ -23,13 +21,22 @@ include_directories("${GLAD_HOME}/include")
 
 # 添加 GLFW3 预编译库
 add_library(glfw SHARED IMPORTED)
+if(APPLE)
 SET_TARGET_PROPERTIES(glfw PROPERTIES IMPORTED_LOCATION "${GLFW_HOME}/lib-macos/libglfw.3.dylib")
-
+    else()
+#    SET_TARGET_PROPERTIES(glfw PROPERTIES IMPORTED_LOCATION "lib/glfw3.dll")
+#    include_directories(include)
+#    link_directories(lib)
+endif()
 # 编译 GLAD 库
-add_library(glad SHARED "${GLAD_HOME}/src/glad.c")
+#SET_TARGET_PROPERTIES(glfw PROPERTIES IMPORTED_LOCATION "lib/glfw3.dll")
+include_directories(include)
+#link_directories(lib)
+#add_library(glad SHARED "include/src/glad.c")
 
 # 创建可执行文件
-add_executable(MagicCube MagicCube.cpp)
+add_executable(MagicCube MagicCube.cpp glad.c)
+
 
 # 链接 GLFW GLAD OpenGL
-target_link_libraries(MagicCube glfw glad "-framework OpenGL")
+target_link_libraries(MagicCube ${PROJECT_SOURCE_DIR}/lib/glfw3.dll)
