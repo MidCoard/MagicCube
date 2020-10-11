@@ -1,5 +1,4 @@
 #include <iostream>
-#include <windows.h>
 #include <cmath>
 
 #include "glad/glad.h"
@@ -26,7 +25,6 @@ unsigned int VAO;
 unsigned int EBO;
 
 int main(){
-
     glfwInit();
 
     GLWindow untitled_Window;
