@@ -2,6 +2,7 @@
 #define SHADER_H
 
 #include "glad/glad.h"
+#include "GLFW/glfw3.h"
 
 #include <string>
 #include <fstream>
@@ -18,7 +19,7 @@ class Shader
     private:
         unsigned int ShaderProgramID;
     public:
-        Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+        Shader(const GLchar* vertexShaderPath, const GLchar* fragmentShaderPath);
         ~Shader();
 
         void use();
@@ -26,11 +27,12 @@ class Shader
         void setBool(const string &name, bool value) const;
         void setInt(const string &name, int value) const;
         void setFloat(const string &name, float value) const;
-        unsigned int get_programID();
+        unsigned int getProgramId();
 };
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath)
+Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath)
 {
+    glfwInit();
 
     string vertexCode;
     string fragmentCode;
@@ -42,8 +44,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     try
     {
 
-        vShaderFile.open(vertexPath);
-        fShaderFile.open(fragmentPath);
+        vShaderFile.open(vertexShaderPath);
+        fShaderFile.open(fragmentShaderPath);
         stringstream vShaderStream, fShaderStream;
 
         vShaderStream << vShaderFile.rdbuf();
@@ -116,7 +118,6 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 void Shader::use() {
     glUseProgram(ShaderProgramID);
 }
-
 void Shader::setBool(const string &name, bool value) const
 {
     glUniform1i(glGetUniformLocation(ShaderProgramID, name.c_str()), (int)value);
@@ -129,7 +130,7 @@ void Shader::setFloat(const string &name, float value) const
 {
     glUniform1f(glGetUniformLocation(ShaderProgramID, name.c_str()), value);
 }
-unsigned int Shader::get_programID() {
+unsigned int Shader::getProgramId() {
     return ShaderProgramID;
 }
 Shader::~Shader() {

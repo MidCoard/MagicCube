@@ -5,13 +5,11 @@
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "Camera.h"
 
-#define Window_Width 1080
-#define Window_Height 1080
-#define Window_Title "test"
 #define ErrorCode -1
 
-const float WindowColor[4]={0.2f,0.4f,0.6f,1.0f};
+const float WindowColor[4]={0.0f,0.0f,0.0f,1.0f};
 const unsigned int Red = 0;
 const unsigned int Green = 1;
 const unsigned int Blue = 2;
@@ -19,26 +17,27 @@ const unsigned int Alpha = 3;
 
 using namespace std;
 
-void frameBufferSizeCallback(GLFWwindow*, int, int);
-
 class GLWindow
 {
     private:
         GLFWwindow* window;
     public:
-        GLWindow();
+        GLWindow(int,int,char*);
         ~GLWindow();
 
         GLFWwindow* getWindow();
-        void processInput(GLFWwindow*);
 };
 
-GLWindow::GLWindow() {
+GLWindow::GLWindow(int Window_Width,int Window_Height, char* Window_Title) {
+    glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
     window = glfwCreateWindow(Window_Width, Window_Height, Window_Title, nullptr, nullptr);
+
     if (window == nullptr)
     {
         cout << "Failed to create GLFW window" << endl;
@@ -47,7 +46,6 @@ GLWindow::GLWindow() {
     }
 
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window,frameBufferSizeCallback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -57,20 +55,14 @@ GLWindow::GLWindow() {
     }
     glViewport(0,0,Window_Width,Window_Height);
 }
-void GLWindow::processInput(GLFWwindow *window0)
-{
-    if(glfwGetKey(window0, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window0, true);
-}
-GLFWwindow* GLWindow::getWindow() {
+GLFWwindow* GLWindow::getWindow(){
     return window;
 }
 
 GLWindow::~GLWindow() {
-
+    glfwDestroyWindow(window);
 }
-
-void frameBufferSizeCallback(GLFWwindow* window0, int width, int height){
+void frameBufferSizeCallback(GLFWwindow* window, int width, int height){
     glViewport(0, 0, width, height);
 }
 
