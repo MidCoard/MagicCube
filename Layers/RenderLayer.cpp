@@ -187,7 +187,7 @@ namespace Render {
     }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    int main() {
+    void initRender() {
         init();
         draw();
         while (WINDOW_SHOULD_NOT_CLOSE) {
@@ -200,6 +200,6 @@ namespace Render {
             glfwPollEvents();
         }
         clear();
-        return 0;
+//        return 0;
     }
 }
