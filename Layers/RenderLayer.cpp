@@ -187,7 +187,7 @@ namespace Render {
     }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    void initRender() {
+    void initRenderLayer() {
         init();
         draw();
         while (WINDOW_SHOULD_NOT_CLOSE) {

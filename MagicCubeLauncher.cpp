@@ -5,6 +5,8 @@
 using namespace std;
 
 void initialize() {
+    Logic::initLogicLayer();
+    Render::initRenderLayer();
 }
 
 void sync(double loopStartTime) {
@@ -17,23 +19,25 @@ void sync(double loopStartTime) {
 
 int main() {
     initialize();
-    double secsPerUpdate = 1.0 / 30.0;
-    double previous = getTime();
-    double steps = 0.0;
-    while (true) {
-        double loopStartTime = getTime();
-        double elapsed = loopStartTime - previous;
-        previous = loopStartTime;
-        steps += elapsed;
+    if (Logic::isInitialize()) {
+        double secsPerUpdate = 1.0 / 30.0;
+        double previous = getTime();
+        double steps = 0.0;
+        while (true) {
+            double loopStartTime = getTime();
+            double elapsed = loopStartTime - previous;
+            previous = loopStartTime;
+            steps += elapsed;
 
-        handleInput();
+            handleInput();
 
-        while (steps >= secsPerUpdate) {
-            updateGameState();
-            steps -= secsPerUpdate;
+            while (steps >= secsPerUpdate) {
+                updateGameState();
+                steps -= secsPerUpdate;
+            }
+
+            render();
+            sync(loopStartTime);
         }
-
-        render();
-        sync(loopStartTime);
     }
 }
