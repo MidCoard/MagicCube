@@ -7,11 +7,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "HeaderFiles/Shader.h"
-#include "HeaderFiles/GLWindows.h"
-#include "HeaderFiles/Camera.h"
-#include "HeaderFiles/RenderPoint.h"
-#include "HeaderFiles/MagicCube.h"
+#include "Shader.h"
+#include "GLWindows.h"
+#include "Camera.h"
+#include "RenderPoint.h"
+#include "MagicCube.h"
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1080
