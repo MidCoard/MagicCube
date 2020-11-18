@@ -1,11 +1,10 @@
-#ifndef UNTITLED_RENDERPOINT_H
-#define UNTITLED_RENDERPOINT_H
+#ifndef RENDER_POINT_H
+#define RENDER_POINT_H
 
 #include<iostream>
 #include<stdlib.h>
 #include<map>
 
-#include "MagicCube.h"
 
 using namespace std;
 
@@ -103,17 +102,6 @@ public: Point(int x,int y,int z) {
         for (int dz = 0;dz<2;dz++)
             for (int i = 0;i<2;i++)
                 triangles[pos++] = Triangle(getRenderPoint(x+i,y+i,z+dz),getRenderPoint(x+1,y,z+dz),getRenderPoint(x,y+1,z+dz));
-        cout<<"Point:"<<this->x<<":"<<this->y<<":"<<this->z<<endl;
-        for (int i = 0;i<pos;i++) {
-            Triangle triangle = triangles[i];
-            for (int j = 0;j<3;j++) {
-                RenderPoint renderPoint = triangle.renderPoints[j];
-                cout<<renderPoint.x<<' '<<renderPoint.y<<" "<<renderPoint.z<<endl;
-//                if (j == 2)
-//                    cout<<triangle.indexes[j]<<endl;
-//                else cout<<triangle.indexes[j]<<" ";
-            }
-        }
     }
 };
 
@@ -145,4 +133,8 @@ double toOffset(int i) {
     return 0;
 }
 
-#endif //UNTITLED_RENDERPOINT_H
+void initialize() {
+    for (int i = 0;i<)
+}
+
+#endif
