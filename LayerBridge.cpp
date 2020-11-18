@@ -1,4 +1,5 @@
 #include "Layers/LogicLayer.cpp"
+#include "Layers/RenderLayer.cpp"
 
 void render() {
 

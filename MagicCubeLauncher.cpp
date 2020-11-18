@@ -5,7 +5,6 @@
 using namespace std;
 
 void initialize() {
-
 }
 
 void sync(double loopStartTime) {
