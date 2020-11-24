@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(MagicCube)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 ## 检查环境变量
 #if (NOT DEFINED ENV{GLFW_HOME})
@@ -22,7 +22,7 @@ include_directories(HeaderFiles)
 #add_library(glfw SHARED IMPORTED)
 add_executable(MagicCube glad.c MagicCubeLauncher.cpp)
 if (APPLE)
-#    set(GLEW_LINK ${PROJECT_SOURCE_DIR}/lib/libGLEW.2.1.dylib)
+    #    set(GLEW_LINK ${PROJECT_SOURCE_DIR}/lib/libGLEW.2.1.dylib)
     set(GLFW_LINK ${PROJECT_SOURCE_DIR}/lib/libglfw.3.dylib)
     target_link_libraries(MagicCube ${GLFW_LINK})
     target_link_libraries(MagicCube "-framework OpenGL")
