@@ -12,6 +12,7 @@
 #include "Camera.h"
 #include "RenderPoint.h"
 #include "MagicCube.h"
+#include "util.cpp"
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1080
@@ -188,6 +189,7 @@ namespace Render {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void initRenderLayer() {
+        magicCube.getBlock(0,0,0)->
         init();
         draw();
         while (WINDOW_SHOULD_NOT_CLOSE) {

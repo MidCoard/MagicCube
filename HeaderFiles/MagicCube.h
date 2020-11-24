@@ -1,6 +1,7 @@
-#ifndef MAGICCUBE_MAGICCUBE_H
-#define MAGICCUBE_MAGICCUBE_H
-#include<stdlib.h>
+#ifndef MAGIC_CUBE_H
+#define MAGIC_CUBE_H
+#include<cstdlib>
+#include "HeaderFiles/RenderPoint.h"
 class CubeBlock3Layer;
 class CubeBlock2Layer;
 class CubeBlock2Medium;
@@ -30,6 +31,7 @@ const Color WHITE = Color(255,255,255);
 class MagicCubeBlock {
 private:
     Color* colors;
+
 public:
     MagicCubeBlock(int size) {
         this->colors = (Color*)malloc(sizeof(Color) * size);
@@ -155,6 +157,16 @@ public:
         return blocks[x][y];
     }
 };
+
+class WrappedMagicCubeBlock {
+private:
+    MagicCubeBlock magicCubeBlock;
+    Point point;
+public:
+    WrappedMagicCubeBlock(MagicCubeBlock magicCubeBlock, Point point)
+            : magicCubeBlock(magicCubeBlock),point(point){}
+};
+
 class MagicCube {
 private:
     MagicCubeBlocks header;
@@ -207,17 +219,17 @@ public:
     MediumMagicCubeBlocks getMedium() {
         return this->medium;
     }
-    MagicCubeBlock getBlock(int x,int y,int z) {
+    WrappedMagicCubeBlock* getBlock(int x,int y,int z) {
+        Point point = Point(x,y,z);
         if (z == 0)
-            return this->getFooter().getBlock(x,y);
+            return new WrappedMagicCubeBlock(this->getFooter().getBlock(x,y),point);
         else if (z == 1)
-            return this->getMedium().getBlock(x,y);
+            return new WrappedMagicCubeBlock(this->getMedium().getBlock(x,y),point);
         else if (z == 2)
-            return this->getHeader().getBlock(x,y);
+            return new WrappedMagicCubeBlock(this->getHeader().getBlock(x,y),point);
         return NULL;
     }
 };
 
 
-
-#endif //MAGICCUBE_MAGICCUBE_H
+#endif

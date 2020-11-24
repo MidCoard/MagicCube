@@ -4,6 +4,8 @@
 
 using namespace std;
 
+MagicCube magicCube;
+
 void sleep(int microseconds) {
     this_thread::sleep_for(chrono::microseconds(microseconds));
 }
