@@ -12,7 +12,6 @@
 #include "Camera.h"
 #include "RenderPoint.h"
 #include "MagicCube.h"
-#include "util.cpp"
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1080
@@ -73,7 +72,7 @@ namespace Render {
     unsigned int VAO[NumVAOs];
     unsigned int VBO[NumBuffers];
 
-    float vertices1[] = {
+    float vertices1[] ={
             -1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
             0.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
             -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f
@@ -189,9 +188,9 @@ namespace Render {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void initRenderLayer() {
-        magicCube.getBlock(0,0,0)->
-        init();
-        draw();
+//        magicCube.getBlock(0,0,0)->
+                init();
+                draw();
         while (WINDOW_SHOULD_NOT_CLOSE) {
             float currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;

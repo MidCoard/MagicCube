@@ -2,9 +2,9 @@
 #define RENDER_POINT_H
 
 #include<iostream>
-#include<stdlib.h>
+#include<cstdlib>
 #include<map>
-
+#include "Color.h"
 
 using namespace std;
 
@@ -133,8 +133,29 @@ double toOffset(int i) {
     return 0;
 }
 
-void initialize() {
-    for (int i = 0;i<)
+Point getPoint(int x,int y,int z) {
+    return points[x*9 + y * 3 + z ];
+}
+
+bool isRenderPointInit = false;
+
+void initRenderPoint() {
+    if (isRenderPointInit)
+        return;
+    for (int i = 0;i<6;i++)
+        for (int j = 0;j<6;j++)
+            for (int k = 0;k<6;k++) {
+                RenderPoint renderPoint = RenderPoint(start + toOffset(i),start + toOffset(j),start + toOffset(k));
+                renderPoints[i*6*6 + j*6 + k] = renderPoint;
+                renderPointIndex[renderPoint] = (i*6*6 + j*6 + k);
+            }
+    int pos = 0;
+    for (int i = 0;i<3;i++)
+        for (int j = 0;j<3;j++)
+            for (int k = 0;k<3;k++) {
+                points[pos++] = Point(i, j, k);
+            }
+    isRenderPointInit = true;
 }
 
 #endif

@@ -1,32 +1,14 @@
 #ifndef MAGIC_CUBE_H
 #define MAGIC_CUBE_H
 #include<cstdlib>
-#include "HeaderFiles/RenderPoint.h"
+#include "RenderPoint.h"
+#include "Color.h"
 class CubeBlock3Layer;
 class CubeBlock2Layer;
 class CubeBlock2Medium;
 class CubeBlock1;
 class CubeBlock2;
 class CubeBlock3;
-class Color {
-private:
-    short r;
-    short g;
-    short b;
-public:
-    Color(short r,short g,short b) {
-        this->r;
-        this->g;
-        this->b;
-    }
-};
-
-const Color BLUE = Color(0,0,255);
-const Color GREEN = Color(0,255,0);
-const Color ORANGE = Color(255,165,0);
-const Color RED = Color(255,0,0);
-const Color YELLOW = Color(255,255,0);
-const Color WHITE = Color(255,255,255);
 
 class MagicCubeBlock {
 private:
@@ -220,7 +202,9 @@ public:
         return this->medium;
     }
     WrappedMagicCubeBlock* getBlock(int x,int y,int z) {
-        Point point = Point(x,y,z);
+        if (!isRenderPointInit)
+            initRenderPoint();
+        Point point = getPoint(x,y,z);
         if (z == 0)
             return new WrappedMagicCubeBlock(this->getFooter().getBlock(x,y),point);
         else if (z == 1)

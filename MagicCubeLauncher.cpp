@@ -13,7 +13,7 @@ void sync(double loopStartTime) {
     float loopSlot = 1.0f / 50;
     double endTime = loopStartTime + loopSlot;
     while(getTime() < endTime) {
-        sleep(1);
+        sleepMS(1);
     }
 }
 
