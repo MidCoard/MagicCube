@@ -20,6 +20,11 @@
 
 namespace Render {
 
+    bool initialize = false;
+
+    bool isInitialize() {
+        return initialize;
+    }
 
     using namespace std;
     using namespace glm;
@@ -44,10 +49,13 @@ namespace Render {
 
     void scrollCallback(GLFWwindow *, double, double);
 
+    void resetLocationValue();
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const unsigned int NumBuffers = 2;
     const unsigned int NumVAOs = 2;
     unsigned int LocationValue = 0;
+    unsigned int BufferCounter = 0;
 
     mat4 transposition = mat4(1.0f);
     mat4 projection = mat4(1.0f);
@@ -72,36 +80,56 @@ namespace Render {
     unsigned int VAO[NumVAOs];
     unsigned int VBO[NumBuffers];
 
-    float vertices1[] ={
-            -1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f
+    float vertices[2][9] =
+            {
+                    {-1.0f, -0.5f, 0.0f,
+                     0.0f, -0.5f, 0.0f,
+                     -0.5f, 0.5f, 0.0f, },
+
+                    {0.0f,-0.5f, 0.0f,
+                     1.0f, -0.5f, 0.0f,
+                     0.5f,  0.5f, 0.0f }
+            };
+
+    float colors[2][9] = {
+            {
+                    1.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, 0.0f
+            },
+            {
+                    0.0f, 0.0f, 1.0f,
+                    0.0f, 0.0f, 1.0f,
+                    0.0f, 0.0f, 1.0f
+            }
     };
-    float vertices2[] = {
-            0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-            1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-            0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f
-    };
+
 
     void draw() {
         glGenVertexArrays(NumVAOs, VAO);
         glGenBuffers(NumBuffers, VBO);
 
-        glBindVertexArray(VAO[0]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 3);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
+        glBindVertexArray(VAO[BufferCounter]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[BufferCounter]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]), vertices[0], GL_STATIC_DRAW);
+        glVertexAttribPointer(LocationValue, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+        glEnableVertexAttribArray(LocationValue++);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(colors[0]), colors[0], GL_STATIC_DRAW);
+        glVertexAttribPointer(LocationValue, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+        glEnableVertexAttribArray(LocationValue++);
+        resetLocationValue();
+        BufferCounter++;
 
-        glBindVertexArray(VAO[1]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 3);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
+        glBindVertexArray(VAO[BufferCounter]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[BufferCounter]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[1]), vertices[1], GL_STATIC_DRAW);
+        glVertexAttribPointer(LocationValue, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+        glEnableVertexAttribArray(LocationValue++);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(colors[1]), colors[1], GL_STATIC_DRAW);
+        glVertexAttribPointer(LocationValue, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+        glEnableVertexAttribArray(LocationValue++);
+        resetLocationValue();
+        BufferCounter++;
 
         glEnable(GL_DEPTH_TEST);
     }
@@ -189,8 +217,8 @@ namespace Render {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void initRenderLayer() {
 //        magicCube.getBlock(0,0,0)->
-                init();
-                draw();
+        init();
+        draw();
         while (WINDOW_SHOULD_NOT_CLOSE) {
             float currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
@@ -201,6 +229,10 @@ namespace Render {
             glfwPollEvents();
         }
         clear();
-//        return 0;
     }
+
+    void resetLocationValue() {
+        LocationValue = 0;
+    }
+
 }
