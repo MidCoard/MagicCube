@@ -144,7 +144,7 @@ private:
     MagicCubeBlock magicCubeBlock;
     RenderBlock renderBlock;
 public:
-    const MagicCubeBlock getMagicCubeBlock() const {
+    const MagicCubeBlock getMagicCubeBlock() {
         return magicCubeBlock;
     }
 

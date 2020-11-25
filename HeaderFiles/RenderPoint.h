@@ -26,6 +26,18 @@ public:
         this->z = z;
     }
 
+    float getX() {
+        return x;
+    }
+
+    float getY() {
+        return y;
+    }
+
+    float getZ() {
+        return z;
+    }
+
 };
 
 class Triangle {
@@ -66,6 +78,20 @@ int toPointPosition(int i) {
 class RenderBlock {
 private:
     int x, y, z;
+public:
+    int getX() {
+        return x;
+    }
+
+    int getY() {
+        return y;
+    }
+
+    int getZ() {
+        return z;
+    }
+
+private:
     Triangle *triangles;
 public:
     RenderBlock(int x, int y, int z) {
@@ -89,6 +115,10 @@ public:
             for (int i = 0; i < 2; i++)
                 triangles[pos++] = Triangle(getRenderPoint(x + i, y + i, z + dz), getRenderPoint(x + 1, y, z + dz),
                                             getRenderPoint(x, y + 1, z + dz));
+    }
+
+    Triangle getTriangle(int index) {
+        return triangles[index];
     }
 };
 
