@@ -224,7 +224,7 @@ public:
     }
 };
 
-MagicCube magicCUBE;
+MagicCube magicCube;
 
 
 #endif
