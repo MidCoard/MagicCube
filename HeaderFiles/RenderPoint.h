@@ -15,7 +15,6 @@ const double PART_OFFSET = 0.5;
 const double BORDER_OFFSET = 0.1;
 
 
-
 class RenderPoint {
 
 public:
@@ -29,44 +28,22 @@ public:
 
 };
 
-map<RenderPoint, int> renderPointIndex;
-
-
-
 class Triangle {
 
 public:
     RenderPoint *renderPoints;
-    int *indexes;
 
     Triangle(RenderPoint start, RenderPoint end, RenderPoint mid) {
         renderPoints = (RenderPoint *) malloc(sizeof(RenderPoint) * 3);
-        indexes = (int *) malloc(sizeof(int) * 3);
         renderPoints[0] = start;
         renderPoints[1] = end;
         renderPoints[2] = mid;
-        indexes[0] = renderPointIndex[start];
-        indexes[1] = renderPointIndex[end];
-        indexes[2] = renderPointIndex[mid];
+    }
+
+    RenderPoint get(int index) {
+        return renderPoints[index];
     }
 };
-
-bool operator<(const RenderPoint &t, const RenderPoint &renderPoint) {
-    if (t.x < renderPoint.x)
-        return true;
-    if (t.x > renderPoint.x)
-        return false;
-    if (t.y < renderPoint.y)
-        return true;
-    if (t.y > renderPoint.y)
-        return false;
-    if (t.z < renderPoint.z)
-        return true;
-    if (t.z > renderPoint.z)
-        return false;
-    return false;
-}
-
 
 RenderPoint *renderPoints = (RenderPoint *) malloc(sizeof(RenderPoint) * 216);
 
@@ -86,30 +63,12 @@ int toPointPosition(int i) {
     return -1;
 }
 
-double toOffset(int i) {
-    switch (i) {
-        case 0:
-            return 0;
-        case 1:
-            return PART_OFFSET;
-        case 2:
-            return PART_OFFSET + BORDER_OFFSET;
-        case 3:
-            return PART_OFFSET * 2 + BORDER_OFFSET;
-        case 4:
-            return PART_OFFSET * 2 + BORDER_OFFSET * 2;
-        case 5:
-            return PART_OFFSET * 3 + BORDER_OFFSET * 2;
-    }
-    return -1;
-}
-
-class Point {
+class RenderBlock {
 private:
     int x, y, z;
     Triangle *triangles;
 public:
-    Point(int x, int y, int z) {
+    RenderBlock(int x, int y, int z) {
         this->x = x;
         this->y = y;
         this->z = z;
@@ -133,11 +92,29 @@ public:
     }
 };
 
-Point *points = (Point *) malloc(sizeof(Point) * 27);
+double toOffset(int i) {
+    switch (i) {
+        case 0:
+            return 0;
+        case 1:
+            return PART_OFFSET;
+        case 2:
+            return PART_OFFSET + BORDER_OFFSET;
+        case 3:
+            return PART_OFFSET * 2 + BORDER_OFFSET;
+        case 4:
+            return PART_OFFSET * 2 + BORDER_OFFSET * 2;
+        case 5:
+            return PART_OFFSET * 3 + BORDER_OFFSET * 2;
+    }
+    return -1;
+}
+
+RenderBlock *renderblocks = (RenderBlock *) malloc(sizeof(RenderBlock) * 27);
 
 
-Point getPoint(int x, int y, int z) {
-    return points[x * 9 + y * 3 + z];
+RenderBlock getRenderBlock(int x, int y, int z) {
+    return renderblocks[x * 9 + y * 3 + z];
 }
 
 bool isRenderPointInit = false;
@@ -151,14 +128,13 @@ void initRenderPoint() {
             for (int k = 0; k < 6; k++) {
                 RenderPoint renderPoint = RenderPoint(START_OFFSET + toOffset(i), START_OFFSET + toOffset(j), START_OFFSET + toOffset(k));
                 renderPoints[i * 6 * 6 + j * 6 + k] = renderPoint;
-                renderPointIndex[renderPoint] = (i * 6 * 6 + j * 6 + k);
             }
+    // init RenderBlock
     int pos = 0;
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
-            for (int k = 0; k < 3; k++) {
-                points[pos++] = Point(i, j, k);
-            }
+            for (int k = 0; k < 3; k++)
+                renderblocks[pos++] = RenderBlock(i, j, k);
     isRenderPointInit = true;
 }
 

@@ -2,7 +2,6 @@
 #define MAGIC_CUBE_H
 #include<cstdlib>
 #include "RenderPoint.h"
-#include "Color.h"
 class CubeBlock3Layer;
 class CubeBlock2Layer;
 class CubeBlock2Medium;
@@ -143,10 +142,22 @@ public:
 class WrappedMagicCubeBlock {
 private:
     MagicCubeBlock magicCubeBlock;
-    Point point;
+    RenderBlock renderBlock;
 public:
-    WrappedMagicCubeBlock(MagicCubeBlock magicCubeBlock, Point point)
-            : magicCubeBlock(magicCubeBlock),point(point){}
+    const MagicCubeBlock getMagicCubeBlock() const {
+        return magicCubeBlock;
+    }
+
+    const RenderBlock getRenderBlock() {
+        return renderBlock;
+    }
+
+    const Color getColor(int index) {
+        return magicCubeBlock.getColor(index);
+    }
+public:
+    WrappedMagicCubeBlock(MagicCubeBlock magicCubeBlock, RenderBlock renderBlock)
+            : magicCubeBlock(magicCubeBlock),renderBlock(renderBlock){}
 };
 
 class MagicCube {
@@ -202,18 +213,17 @@ public:
         return this->medium;
     }
     WrappedMagicCubeBlock* getBlock(int x,int y,int z) {
-        if (!isRenderPointInit)
-            initRenderPoint();
-        Point point = getPoint(x,y,z);
+        RenderBlock renderBlock = getRenderBlock(x, y, z);
         if (z == 0)
-            return new WrappedMagicCubeBlock(this->getFooter().getBlock(x,y),point);
+            return new WrappedMagicCubeBlock(this->getFooter().getBlock(x,y), renderBlock);
         else if (z == 1)
-            return new WrappedMagicCubeBlock(this->getMedium().getBlock(x,y),point);
+            return new WrappedMagicCubeBlock(this->getMedium().getBlock(x,y), renderBlock);
         else if (z == 2)
-            return new WrappedMagicCubeBlock(this->getHeader().getBlock(x,y),point);
-        return NULL;
+            return new WrappedMagicCubeBlock(this->getHeader().getBlock(x,y), renderBlock);
+        return nullptr;
     }
 };
+
 const MagicCube MAGIC_CUBE;
 
 

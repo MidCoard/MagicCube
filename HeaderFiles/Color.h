@@ -12,6 +12,19 @@ private:
     short g;
     short b;
 public:
+    short getR() const {
+        return r;
+    }
+
+    short getG() const {
+        return g;
+    }
+
+    short getB() const {
+        return b;
+    }
+
+public:
     Color(short r,short g,short b) {
         this->r;
         this->g;
