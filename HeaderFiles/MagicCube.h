@@ -214,6 +214,7 @@ public:
         return NULL;
     }
 };
+const MagicCube MAGIC_CUBE;
 
 
 #endif
