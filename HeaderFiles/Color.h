@@ -12,15 +12,15 @@ private:
     short g;
     short b;
 public:
-    short getR() const {
+    short getR() {
         return r;
     }
 
-    short getG() const {
+    short getG() {
         return g;
     }
 
-    short getB() const {
+    short getB() {
         return b;
     }
 
@@ -33,12 +33,12 @@ public:
 };
 
 
-const Color BLUE = Color(0,0,255);
-const Color GREEN = Color(0,255,0);
-const Color ORANGE = Color(255,165,0);
-const Color RED = Color(255,0,0);
-const Color YELLOW = Color(255,255,0);
-const Color WHITE = Color(255,255,255);
+Color BLUE = Color(0,0,255);
+Color GREEN = Color(0,255,0);
+Color ORANGE = Color(255,165,0);
+Color RED = Color(255,0,0);
+Color YELLOW = Color(255,255,0);
+Color WHITE = Color(255,255,255);
 
 
 #endif //MAGICCUBE_COLOR_H

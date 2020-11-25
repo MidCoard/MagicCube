@@ -144,15 +144,15 @@ private:
     MagicCubeBlock magicCubeBlock;
     RenderBlock renderBlock;
 public:
-    const MagicCubeBlock getMagicCubeBlock() {
+    MagicCubeBlock getMagicCubeBlock() {
         return magicCubeBlock;
     }
 
-    const RenderBlock getRenderBlock() {
+    RenderBlock getRenderBlock() {
         return renderBlock;
     }
 
-    const Color getColor(int index) {
+    Color getColor(int index) {
         return magicCubeBlock.getColor(index);
     }
 public:
