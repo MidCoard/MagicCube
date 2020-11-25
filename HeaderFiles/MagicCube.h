@@ -212,7 +212,7 @@ public:
     MediumMagicCubeBlocks getMedium() {
         return this->medium;
     }
-    WrappedMagicCubeBlock* getBlock(int x,int y,int z) {
+    WrappedMagicCubeBlock* const getBlock(int x,int y,int z) {
         RenderBlock renderBlock = getRenderBlock(x, y, z);
         if (z == 0)
             return new WrappedMagicCubeBlock(this->getFooter().getBlock(x,y), renderBlock);
