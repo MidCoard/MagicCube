@@ -75,6 +75,21 @@ int toPointPosition(int i) {
     return -1;
 }
 
+class RenderFace {
+private:
+    Triangle *triangles;
+public:
+    RenderFace(Triangle first,Triangle second) {
+        triangles = (Triangle *) malloc(sizeof (Triangle) * 2);
+        triangles[0] = first;
+        triangles[1] = second;
+    }
+
+    Triangle getTriangle(int index) {
+        return triangles[index];
+    }
+};
+
 class RenderBlock {
 private:
     int x, y, z;
@@ -92,7 +107,8 @@ public:
     }
 
 private:
-    Triangle *triangles;
+    RenderFace *renderFaces;
+    // 0 up 1 down 2 front 3 back 4 left 5 right
 public:
     RenderBlock(int x, int y, int z) {
         this->x = x;
@@ -101,24 +117,19 @@ public:
         x = toPointPosition(x);
         y = toPointPosition(y);
         z = toPointPosition(z);
-        triangles = (Triangle *) malloc(sizeof(Triangle) * 12);
+        renderFaces = (RenderFace *) malloc(sizeof(RenderFace) * 6);
         int pos = 0;
-        for (int dy = 0; dy < 2; dy++)
-            for (int i = 0; i < 2; i++)
-                triangles[pos++] = Triangle(getRenderPoint(x + i, y + dy, z + i), getRenderPoint(x + 1, y + dy, z),
-                                            getRenderPoint(x, y + dy, z + 1));
-        for (int dx = 0; dx < 2; dx++)
-            for (int i = 0; i < 2; i++)
-                triangles[pos++] = Triangle(getRenderPoint(x + dx, y + i, z + i), getRenderPoint(x + dx, y + 1, z),
-                                            getRenderPoint(x + dx, y, z + 1));
-        for (int dz = 0; dz < 2; dz++)
-            for (int i = 0; i < 2; i++)
-                triangles[pos++] = Triangle(getRenderPoint(x + i, y + i, z + dz), getRenderPoint(x + 1, y, z + dz),
-                                            getRenderPoint(x, y + 1, z + dz));
+        //dy = 1;
+        renderFaces[0] = RenderFace(Triangle(getRenderPoint(x,y+1,z),getRenderPoint(x+1,y+1,z),getRenderPoint(x,y+1,z+1)),Triangle(getRenderPoint(x+1,y+1,z+1),getRenderPoint(x+1,y+1,z),getRenderPoint(x,y+1,z+1)));
+        renderFaces[1] = RenderFace(Triangle(getRenderPoint(x,y,z),getRenderPoint(x+1,y,z),getRenderPoint(x,y,z+1)),Triangle(getRenderPoint(x+1,y,z+1),getRenderPoint(x+1,y,z),getRenderPoint(x,y,z+1)));
+        renderFaces[2] = RenderFace(Triangle(getRenderPoint(x,y,z),getRenderPoint(x+1,y,z),getRenderPoint(x,y+1,z)),Triangle(getRenderPoint(x+1,y+1,z),getRenderPoint(x+1,y,z),getRenderPoint(x,y+1,z)));
+        renderFaces[3] = RenderFace(Triangle(getRenderPoint(x,y,z+1),getRenderPoint(x+1,y,z+1),getRenderPoint(x,y+1,z+1)),Triangle(getRenderPoint(x+1,y+1,z+1),getRenderPoint(x+1,y,z+1),getRenderPoint(x,y+1,z+1)));
+        renderFaces[4] = RenderFace(Triangle(getRenderPoint(x,y,z),getRenderPoint(x,y+1,z),getRenderPoint(x,y,z+1)),Triangle(getRenderPoint(x,y+1,z+1),getRenderPoint(x,y+1,z),getRenderPoint(x,y,z+1)));
+        renderFaces[5] = RenderFace(Triangle(getRenderPoint(x+1,y,z),getRenderPoint(x+1,y+1,z),getRenderPoint(x+1,y,z+1)),Triangle(getRenderPoint(x+1,y+1,z+1),getRenderPoint(x+1,y+1,z),getRenderPoint(x+1,y,z+1)));
     }
 
-    Triangle getTriangle(int index) {
-        return triangles[index];
+    RenderFace getRenderFace(int index) {
+        return renderFaces[index];
     }
 };
 
