@@ -2,7 +2,7 @@
 #include "Layers/RenderLayer.cpp"
 
 void render() {
-
+    Render::render();
 }
 
 void updateGameState() {
@@ -10,5 +10,5 @@ void updateGameState() {
 }
 
 void handleInput() {
-
+    Render::processInput();
 }

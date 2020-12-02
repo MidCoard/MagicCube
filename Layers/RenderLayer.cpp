@@ -10,13 +10,17 @@
 #include "Shader.h"
 #include "GLWindows.h"
 #include "Camera.h"
-#include "RenderPoint.h"
 #include "MagicCube.h"
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1080
 #define WINDOW_TITLE "MagicCube"
 #define WINDOW_SHOULD_NOT_CLOSE !glfwWindowShouldClose(MainWindow.getWindow())
+
+#define NUM_VERTICES 3
+#define STRIDE(steps) steps * sizeof(float)
+#define OFFSET_NULL nullptr
+#define OFFSET(steps) (void*)steps
 
 namespace Render {
 
@@ -52,10 +56,11 @@ namespace Render {
     void resetLocationValue();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    const unsigned int NumBuffers = 2;
+    const unsigned int NumBuffers = 4;
     const unsigned int NumVAOs = 2;
     unsigned int LocationValue = 0;
     unsigned int BufferCounter = 0;
+    unsigned int VAOCounter = 0;
 
     mat4 transposition = mat4(1.0f);
     mat4 projection = mat4(1.0f);
@@ -70,72 +75,59 @@ namespace Render {
     void init() {
         projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
         transposition = rotate(transposition, radians(90.0f), vec3(0.0, 0.0, 0.0));
-        view = Camera.GetViewMatrix();
+        view = Camera.getViewMatrix();
 
         glfwSetFramebufferSizeCallback(MainWindow.getWindow(), frameBufferSizeCallback);
         glfwSetCursorPosCallback(MainWindow.getWindow(), mouseCallback);
         glfwSetScrollCallback(MainWindow.getWindow(), scrollCallback);
     }
 
-    unsigned int VAO[NumVAOs];
-    unsigned int VBO[NumBuffers];
+    unsigned int MagicCubeVAO[NumVAOs];
+    unsigned int MagicCubeVBO[NumBuffers];
 
-    float vertices[2][9] =
-            {
-                    {-1.0f, -0.5f, 0.0f,
-                     0.0f, -0.5f, 0.0f,
-                     -0.5f, 0.5f, 0.0f, },
+    float vertices[2][9] = {
+            {-1.0f, -0.5f, 0.0f,
+            0.0f, -0.5f, 0.0f,
+            -0.5f, 0.5f, 0.0f},
 
-                    {0.0f,-0.5f, 0.0f,
-                     1.0f, -0.5f, 0.0f,
-                     0.5f,  0.5f, 0.0f }
-            };
-
-    float colors[2][9] = {
-            {
-                    1.0f, 0.0f, 0.0f,
-                    1.0f, 0.0f, 0.0f,
-                    1.0f, 0.0f, 0.0f
-            },
-            {
-                    0.0f, 0.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f
-            }
+            {0.0f, -0.5f, 0.0f,
+            1.0f, -0.5f, 0.0f,
+            0.5f, 0.5f, 0.0f}
     };
+    float colors[2][9]={
+            {1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f},
 
-
+            {0.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f}
+    };
     void draw() {
-        glGenVertexArrays(NumVAOs, VAO);
-        glGenBuffers(NumBuffers, VBO);
+        glGenVertexArrays(NumVAOs, MagicCubeVAO);
+        glGenBuffers(NumBuffers, MagicCubeVBO);
+        for(int i=0;i<NumVAOs-1;i++) {
+            glBindVertexArray(MagicCubeVAO[VAOCounter]);
 
-        glBindVertexArray(VAO[BufferCounter]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[BufferCounter]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]), vertices[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(LocationValue, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(LocationValue++);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(colors[0]), colors[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(LocationValue, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(LocationValue++);
-        resetLocationValue();
-        BufferCounter++;
-
-        glBindVertexArray(VAO[BufferCounter]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[BufferCounter]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[1]), vertices[1], GL_STATIC_DRAW);
-        glVertexAttribPointer(LocationValue, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(LocationValue++);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(colors[1]), colors[1], GL_STATIC_DRAW);
-        glVertexAttribPointer(LocationValue, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(LocationValue++);
-        resetLocationValue();
-        BufferCounter++;
-
+            glBindBuffer(GL_ARRAY_BUFFER, MagicCubeVBO[BufferCounter]);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[i]), vertices[i], GL_STATIC_DRAW);
+            glVertexAttribPointer(LocationValue, NUM_VERTICES, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
+            glEnableVertexAttribArray(LocationValue++);
+            BufferCounter++;
+            glBindBuffer(GL_ARRAY_BUFFER, MagicCubeVBO[BufferCounter]);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(colors[i]), colors[i], GL_STATIC_DRAW);
+            glVertexAttribPointer(LocationValue, NUM_VERTICES, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
+            glEnableVertexAttribArray(LocationValue++);
+            resetLocationValue();
+            BufferCounter++;
+            VAOCounter++;
+        }
+        //todo
         glEnable(GL_DEPTH_TEST);
     }
 
     void render() {
-        view = Camera.GetViewMatrix();
+        view = Camera.getViewMatrix();
         projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
 
         glClearColor(WindowColor[Red], WindowColor[Green], WindowColor[Blue], WindowColor[Alpha]);
@@ -154,17 +146,17 @@ namespace Render {
         glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(model));
 
         MagicCubeShader.use();
-        glBindVertexArray(VAO[0]);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-//    MagicCubeShader1.use();
-        glBindVertexArray(VAO[1]);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        for(int i=0;i<NumVAOs-1;i++) {
+            glBindVertexArray(MagicCubeVAO[i]);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+        }
+        glfwSwapBuffers(MainWindow.getWindow());
+        glfwPollEvents();
     }
 
     void clear() {
-        glDeleteVertexArrays(NumVAOs, VAO);
-        glDeleteBuffers(NumBuffers, VBO);
+        glDeleteVertexArrays(NumVAOs, MagicCubeVAO);
+        glDeleteBuffers(NumBuffers, MagicCubeVBO);
         glfwTerminate();
     }
 
@@ -179,13 +171,13 @@ namespace Render {
         if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(MainWindow.getWindow(), true);
         if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
-            Camera.ProcessKeyboard(CAMERAFORWARD, deltaTime);
+            Camera.processKeyboard(CAMERAFORWARD, deltaTime);
         if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
-            Camera.ProcessKeyboard(CAMERABACKWARD, deltaTime);
+            Camera.processKeyboard(CAMERABACKWARD, deltaTime);
         if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
-            Camera.ProcessKeyboard(CAMERALEFT, deltaTime);
+            Camera.processKeyboard(CAMERALEFT, deltaTime);
         if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
-            Camera.ProcessKeyboard(CAMERARIGHT, deltaTime);
+            Camera.processKeyboard(CAMERARIGHT, deltaTime);
         if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
             glfwSetInputMode(MainWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             firstMouse = true;
@@ -207,7 +199,7 @@ namespace Render {
         lastX = xCoordinate;
         lastY = yCoordinate;
 
-        Camera.ProcessMouseMovement(xOffset, yOffset);
+        Camera.processMouseMovement(xOffset, yOffset);
     }
 
     void scrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
@@ -217,6 +209,9 @@ namespace Render {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void initRenderLayer() {
 //        magicCube.getBlock(0,0,0)->
+//        magicCube.getBlock(0,0,0)->getRenderBlock().getTriangle(1).get(0).getX();
+        if(initialize)
+            return;
         init();
         draw();
         while (WINDOW_SHOULD_NOT_CLOSE) {
@@ -225,10 +220,9 @@ namespace Render {
             lastFrame = currentFrame;
             processInput();
             render();
-            glfwSwapBuffers(MainWindow.getWindow());
-            glfwPollEvents();
         }
         clear();
+        initialize = true;
     }
 
     void resetLocationValue() {

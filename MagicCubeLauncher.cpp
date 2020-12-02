@@ -6,7 +6,7 @@
 using namespace std;
 
 void initialize() {
-    initRenderPoint();
+//    initRenderPoint();
     Logic::initLogicLayer();
     Render::initRenderLayer();
 }
@@ -29,7 +29,7 @@ int main() {
         double secsPerUpdate = 1.0 / 30.0;
         double previous = getTime();
         double steps = 0.0;
-        while (true) {
+        while (!glfwWindowShouldClose(Render::MainWindow.getWindow())) {
             double loopStartTime = getTime();
             double elapsed = loopStartTime - previous;
             previous = loopStartTime;
@@ -41,7 +41,6 @@ int main() {
                 updateGameState();
                 steps -= secsPerUpdate;
             }
-
             render();
             sync(loopStartTime);
         }
