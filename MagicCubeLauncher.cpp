@@ -12,7 +12,7 @@ void initialize() {
 }
 
 void sync(double loopStartTime) {
-    float loopSlot = 1.0f / 50;
+    float loopSlot = 1.0f / 300;
     double endTime = loopStartTime + loopSlot;
     while(getTime() < endTime) {
         sleepMS(1);
@@ -26,10 +26,11 @@ bool isInitialize() {
 int main() {
     initialize();
     if (isInitialize()) {
-        double secsPerUpdate = 1.0 / 30.0;
+        double secsPerUpdate = 1.0 / 100.0;
         double previous = getTime();
         double steps = 0.0;
-        while (!glfwWindowShouldClose(Render::MainWindow.getWindow())) {
+        double last = 0;
+        while (!glfwWindowShouldClose(Render::getWindow()->getWindow())) {
             double loopStartTime = getTime();
             double elapsed = loopStartTime - previous;
             previous = loopStartTime;
@@ -43,6 +44,12 @@ int main() {
             }
             render();
             sync(loopStartTime);
+            if (getTime() - last >= 1) {
+                last++;
+                cout<<"update:"<<updateCount<<endl;
+                cout<<"render:"<<renderCount<<endl;
+            }
         }
+        Render::clear();
     }
 }

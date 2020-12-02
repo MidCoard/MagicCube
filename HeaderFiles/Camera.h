@@ -8,11 +8,11 @@
 #include <vector>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
-enum Camera_Movement {
-    CAMERAFORWARD,
-    CAMERABACKWARD,
-    CAMERALEFT,
-    CAMERARIGHT
+enum CameraMovement {
+    CAMERA_FORWARD,
+    CAMERA_BACKWARD,
+    CAMERA_LEFT,
+    CAMERA_RIGHT
 };
 
 // Default camera values
@@ -66,16 +66,16 @@ public:
     }
 
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-    void processKeyboard(Camera_Movement direction, float deltaTime)
+    void processKeyboard(CameraMovement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
-        if (direction == CAMERAFORWARD)
+        if (direction == CAMERA_FORWARD)
             Position += Front * velocity;
-        if (direction == CAMERABACKWARD)
+        if (direction == CAMERA_BACKWARD)
             Position -= Front * velocity;
-        if (direction == CAMERALEFT)
+        if (direction == CAMERA_LEFT)
             Position -= Right * velocity;
-        if (direction == CAMERARIGHT)
+        if (direction == CAMERA_RIGHT)
             Position += Right * velocity;
     }
 

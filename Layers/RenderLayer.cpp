@@ -33,11 +33,11 @@ namespace Render {
     using namespace std;
     using namespace glm;
 
-    GLWindow MainWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
+    GLWindow*window;
 
-    Shader MagicCubeShader("Shaders/vertexShader.vs", "Shaders/fragmentShader.fs");
+    Shader*shader;
 
-    Camera Camera(vec3(0.0f, 0.0f, 6.0f));
+    Camera* camera;
 
     void init();
 
@@ -71,16 +71,6 @@ namespace Render {
     unsigned int modelLocation;
     unsigned int viewLocation;
     unsigned int projectionLocation;
-
-    void init() {
-        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
-        transposition = rotate(transposition, radians(90.0f), vec3(0.0, 0.0, 0.0));
-        view = Camera.getViewMatrix();
-
-        glfwSetFramebufferSizeCallback(MainWindow.getWindow(), frameBufferSizeCallback);
-        glfwSetCursorPosCallback(MainWindow.getWindow(), mouseCallback);
-        glfwSetScrollCallback(MainWindow.getWindow(), scrollCallback);
-    }
 
     unsigned int MagicCubeVAO[NumVAOs];
     unsigned int MagicCubeVBO[NumBuffers];
@@ -127,30 +117,30 @@ namespace Render {
     }
 
     void render() {
-        view = Camera.getViewMatrix();
+        view = camera->getViewMatrix();
         projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
 
         glClearColor(WindowColor[Red], WindowColor[Green], WindowColor[Blue], WindowColor[Alpha]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        transpositionLocation = glGetUniformLocation(MagicCubeShader.getProgramId(), "transform");
+        transpositionLocation = glGetUniformLocation(shader->getProgramId(), "transform");
         glUniformMatrix4fv(transpositionLocation, 1, GL_FALSE, value_ptr(transposition));
 
-        viewLocation = glGetUniformLocation(MagicCubeShader.getProgramId(), "view");
+        viewLocation = glGetUniformLocation(shader->getProgramId(), "view");
         glUniformMatrix4fv(viewLocation, 1, GL_FALSE, value_ptr(view));
 
-        projectionLocation = glGetUniformLocation(MagicCubeShader.getProgramId(), "projection");
+        projectionLocation = glGetUniformLocation(shader->getProgramId(), "projection");
         glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, value_ptr(projection));
 
-        modelLocation = glGetUniformLocation(MagicCubeShader.getProgramId(), "model");
+        modelLocation = glGetUniformLocation(shader->getProgramId(), "model");
         glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(model));
 
-        MagicCubeShader.use();
+        shader->use();
         for(int i=0;i<NumVAOs-1;i++) {
             glBindVertexArray(MagicCubeVAO[i]);
             glDrawArrays(GL_TRIANGLES, 0, 3);
         }
-        glfwSwapBuffers(MainWindow.getWindow());
+        glfwSwapBuffers(window->getWindow());
         glfwPollEvents();
     }
 
@@ -167,24 +157,7 @@ namespace Render {
     float lastY = WINDOW_HEIGHT / 2.0f;
     bool firstMouse = true;
 
-    void processInput() {
-        if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(MainWindow.getWindow(), true);
-        if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
-            Camera.processKeyboard(CAMERAFORWARD, deltaTime);
-        if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
-            Camera.processKeyboard(CAMERABACKWARD, deltaTime);
-        if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
-            Camera.processKeyboard(CAMERALEFT, deltaTime);
-        if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
-            Camera.processKeyboard(CAMERARIGHT, deltaTime);
-        if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
-            glfwSetInputMode(MainWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            firstMouse = true;
-        }
-        if (glfwGetKey(MainWindow.getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_RELEASE)
-            glfwSetInputMode(MainWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
+
 
     void mouseCallback(GLFWwindow *window, double xCoordinate, double yCoordinate) {
         if (firstMouse) {
@@ -199,11 +172,19 @@ namespace Render {
         lastX = xCoordinate;
         lastY = yCoordinate;
 
-        Camera.processMouseMovement(xOffset, yOffset);
+        camera->processMouseMovement(xOffset, yOffset);
     }
 
     void scrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
-        Camera.ProcessMouseScroll(yOffset);
+        camera->ProcessMouseScroll(yOffset);
+    }
+
+    Camera* getCamera(){
+        return camera;
+    }
+
+    GLWindow* getWindow() {
+        return window;
     }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,16 +193,19 @@ namespace Render {
 //        magicCube.getBlock(0,0,0)->getRenderBlock().getTriangle(1).get(0).getX();
         if(initialize)
             return;
-        init();
+        window = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
+        shader = new Shader("Shaders/vertexShader.vs", "Shaders/fragmentShader.fs");
+        camera = new Camera(vec3(0.0f, 0.0f, 6.0f));
+        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        transposition = rotate(transposition, radians(90.0f), vec3(0.0, 0.0, 0.0));
+        view = camera->getViewMatrix();
+
+        glfwSetFramebufferSizeCallback(window->getWindow(), frameBufferSizeCallback);
+        glfwSetCursorPosCallback(window->getWindow(), mouseCallback);
+        glfwSetScrollCallback(window->getWindow(), scrollCallback);
         draw();
-        while (WINDOW_SHOULD_NOT_CLOSE) {
-            float currentFrame = glfwGetTime();
-            deltaTime = currentFrame - lastFrame;
-            lastFrame = currentFrame;
-            processInput();
-            render();
-        }
-        clear();
+
+        //todo clear
         initialize = true;
     }
 
@@ -229,4 +213,7 @@ namespace Render {
         LocationValue = 0;
     }
 
+    void setFirstMouse(bool flag) {
+        firstMouse = flag;
+    }
 }

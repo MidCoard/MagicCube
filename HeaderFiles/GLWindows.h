@@ -55,6 +55,7 @@ GLWindow::GLWindow(int Window_Width,int Window_Height, char* Window_Title) {
     }
     glViewport(0,0,Window_Width,Window_Height);
 }
+
 GLFWwindow* GLWindow::getWindow(){
     return window;
 }

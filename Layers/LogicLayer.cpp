@@ -6,6 +6,9 @@ namespace Logic {
         return initialize;
     }
 
+    void updateGameState() {
+
+    }
 
     void initLogicLayer() {
         if (initialize)

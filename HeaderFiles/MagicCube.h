@@ -17,9 +17,6 @@ public:
     MagicCubeBlock(int size) {
         this->colors = (Color*)malloc(sizeof(Color) * size);
     }
-    ~MagicCubeBlock() {
-        free(colors);
-    }
     MagicCubeBlock setColor(int index,Color color) {
         this->colors[index] = color;
         return *this;
