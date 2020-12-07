@@ -40,7 +40,7 @@ GLWindow::GLWindow(int Window_Width,int Window_Height, char* Window_Title) {
 
     if (window == nullptr)
     {
-        cout << "Failed to create GLFW window" << endl;
+        cout << "Failed to create GLFW mainWindow" << endl;
         glfwTerminate();
         exit(ErrorCode);
     }

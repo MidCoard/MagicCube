@@ -2,27 +2,28 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <stb_image.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
 #include "GLWindows.h"
 #include "Camera.h"
 #include "MagicCube.h"
+#include "SetVertices.h"
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1080
 #define WINDOW_TITLE "MagicCube"
-#define WINDOW_SHOULD_NOT_CLOSE !glfwWindowShouldClose(MainWindow.getWindow())
 
 #define NUM_VERTICES 3
+#define NUM_TRIANGLES 36
 #define STRIDE(steps) steps * sizeof(float)
 #define OFFSET_NULL nullptr
 #define OFFSET(steps) (void*)steps
 
 namespace Render {
+
+    using namespace std;
+    using namespace glm;
+/////////////////////////////////////////////////////////////////////////////////////////
 
     bool initialize = false;
 
@@ -30,16 +31,15 @@ namespace Render {
         return initialize;
     }
 
-    using namespace std;
-    using namespace glm;
+/////////////////////////////////////////////////////////////////////////////////////////
 
-    GLWindow*window;
+    GLWindow* mainWindow;
 
-    Shader*shader;
+    Shader* cubeShader;
 
     Camera* camera;
 
-    void init();
+    const vec3 CAMERA_POSITION = vec3(0.0f, 0.0f, 10.0f);
 
     void draw();
 
@@ -47,17 +47,14 @@ namespace Render {
 
     void clear();
 
-    void processInput();
+    void mouseCallback(GLFWwindow*, double, double);
 
-    void mouseCallback(GLFWwindow *window, double xCoordinate, double yCoordinate);
-
-    void scrollCallback(GLFWwindow *, double, double);
+    void scrollCallback(GLFWwindow*, double, double);
 
     void resetLocationValue();
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    const unsigned int NumBuffers = 4;
-    const unsigned int NumVAOs = 2;
+    const unsigned int NumBuffers = 1;
+    const unsigned int NumVAOs = 1;
     unsigned int LocationValue = 0;
     unsigned int BufferCounter = 0;
     unsigned int VAOCounter = 0;
@@ -75,72 +72,71 @@ namespace Render {
     unsigned int MagicCubeVAO[NumVAOs];
     unsigned int MagicCubeVBO[NumBuffers];
 
-    float vertices[2][9] = {
-            {-1.0f, -0.5f, 0.0f,
-            0.0f, -0.5f, 0.0f,
-            -0.5f, 0.5f, 0.0f},
+//////////////////////////////////////////////////////////////////////////////////////////////////
+    void initRenderLayer() {
+        if(initialize)
+            return;
 
-            {0.0f, -0.5f, 0.0f,
-            1.0f, -0.5f, 0.0f,
-            0.5f, 0.5f, 0.0f}
-    };
-    float colors[2][9]={
-            {1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f},
+        mainWindow = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
+        cubeShader = new Shader("Shaders/vertexShader.vs", "Shaders/fragmentShader.fs");
+        camera = new Camera(CAMERA_POSITION);
 
-            {0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f}
-    };
-    void draw() {
+        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        view = camera->getViewMatrix();
+
+        glfwSetFramebufferSizeCallback(mainWindow->getWindow(), frameBufferSizeCallback);
+        glfwSetCursorPosCallback(mainWindow->getWindow(), mouseCallback);
+        glfwSetScrollCallback(mainWindow->getWindow(), scrollCallback);
+
+        glEnable(GL_DEPTH_TEST);
         glGenVertexArrays(NumVAOs, MagicCubeVAO);
         glGenBuffers(NumBuffers, MagicCubeVBO);
-        for(int i=0;i<NumVAOs-1;i++) {
-            glBindVertexArray(MagicCubeVAO[VAOCounter]);
 
-            glBindBuffer(GL_ARRAY_BUFFER, MagicCubeVBO[BufferCounter]);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[i]), vertices[i], GL_STATIC_DRAW);
-            glVertexAttribPointer(LocationValue, NUM_VERTICES, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
-            glEnableVertexAttribArray(LocationValue++);
-            BufferCounter++;
-            glBindBuffer(GL_ARRAY_BUFFER, MagicCubeVBO[BufferCounter]);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(colors[i]), colors[i], GL_STATIC_DRAW);
-            glVertexAttribPointer(LocationValue, NUM_VERTICES, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
-            glEnableVertexAttribArray(LocationValue++);
-            resetLocationValue();
-            BufferCounter++;
-            VAOCounter++;
-        }
-        //todo
-        glEnable(GL_DEPTH_TEST);
+        draw();
+
+        initialize = true;
+    }
+
+    void draw() {
+        glBindVertexArray(MagicCubeVAO[VAOCounter++]);
+
+        glBindBuffer(GL_ARRAY_BUFFER, MagicCubeVBO[BufferCounter++]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(LocationValue, NUM_VERTICES, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
+        glEnableVertexAttribArray(LocationValue++);
+        glBindBuffer(GL_ARRAY_BUFFER, MagicCubeVBO[BufferCounter++]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(colors[0]), colors[0], GL_STATIC_DRAW);
+        glVertexAttribPointer(LocationValue, NUM_VERTICES, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
+        glEnableVertexAttribArray(LocationValue++);
+        resetLocationValue();
     }
 
     void render() {
         view = camera->getViewMatrix();
-        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
 
         glClearColor(WindowColor[Red], WindowColor[Green], WindowColor[Blue], WindowColor[Alpha]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        transpositionLocation = glGetUniformLocation(shader->getProgramId(), "transform");
+        transpositionLocation = glGetUniformLocation(cubeShader->getProgramId(), "transform");
         glUniformMatrix4fv(transpositionLocation, 1, GL_FALSE, value_ptr(transposition));
 
-        viewLocation = glGetUniformLocation(shader->getProgramId(), "view");
+        viewLocation = glGetUniformLocation(cubeShader->getProgramId(), "view");
         glUniformMatrix4fv(viewLocation, 1, GL_FALSE, value_ptr(view));
 
-        projectionLocation = glGetUniformLocation(shader->getProgramId(), "projection");
+        projectionLocation = glGetUniformLocation(cubeShader->getProgramId(), "projection");
         glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, value_ptr(projection));
 
-        modelLocation = glGetUniformLocation(shader->getProgramId(), "model");
-        glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(model));
-
-        shader->use();
-        for(int i=0;i<NumVAOs-1;i++) {
-            glBindVertexArray(MagicCubeVAO[i]);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(MagicCubeVAO[VAOCounter]);
+        cubeShader->use();
+        for(int i=0;i<NumCubes;i++) {
+            model = mat4(1.0f);
+            model = translate(model,worldPositions[i]);
+            modelLocation = glGetUniformLocation(cubeShader->getProgramId(), "model");
+            glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(model));
+            glDrawArrays(GL_TRIANGLES, 0, NUM_TRIANGLES);
         }
-        glfwSwapBuffers(window->getWindow());
+        glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     }
 
@@ -150,15 +146,14 @@ namespace Render {
         glfwTerminate();
     }
 
+    void resetLocationValue() {
+        LocationValue = 0;
+    }
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    float deltaTime = 0.0f;
-    float lastFrame = 0.0f;
     float lastX = WINDOW_WIDTH / 2.0f;
     float lastY = WINDOW_HEIGHT / 2.0f;
     bool firstMouse = true;
-
-
-
     void mouseCallback(GLFWwindow *window, double xCoordinate, double yCoordinate) {
         if (firstMouse) {
             lastX = xCoordinate;
@@ -179,38 +174,8 @@ namespace Render {
         camera->ProcessMouseScroll(yOffset);
     }
 
-    Camera* getCamera(){
-        return camera;
-    }
-
     GLWindow* getWindow() {
-        return window;
-    }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    void initRenderLayer() {
-//        magicCube.getBlock(0,0,0)->
-//        magicCube.getBlock(0,0,0)->getRenderBlock().getTriangle(1).get(0).getX();
-        if(initialize)
-            return;
-        window = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
-        shader = new Shader("Shaders/vertexShader.vs", "Shaders/fragmentShader.fs");
-        camera = new Camera(vec3(0.0f, 0.0f, 6.0f));
-        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
-        transposition = rotate(transposition, radians(90.0f), vec3(0.0, 0.0, 0.0));
-        view = camera->getViewMatrix();
-
-        glfwSetFramebufferSizeCallback(window->getWindow(), frameBufferSizeCallback);
-        glfwSetCursorPosCallback(window->getWindow(), mouseCallback);
-        glfwSetScrollCallback(window->getWindow(), scrollCallback);
-        draw();
-
-        //todo clear
-        initialize = true;
-    }
-
-    void resetLocationValue() {
-        LocationValue = 0;
+        return mainWindow;
     }
 
     void setFirstMouse(bool flag) {

@@ -46,8 +46,6 @@ int main() {
             sync(loopStartTime);
             if (getTime() - last >= 1) {
                 last++;
-                cout<<"update:"<<updateCount<<endl;
-                cout<<"render:"<<renderCount<<endl;
             }
         }
         Render::clear();
