@@ -11,13 +11,12 @@ using namespace glm;
 
 vec3 xAXIS = vec3(1.0f, 0.0f, 0.0f);
 vec3 yAXIS = vec3(0.0f, 1.0f, 0.0f);
-vec3 zAXIS = vec3(0.0f, 0.0f, 1.0f);
+vec3 zAXIS = vec3(0.0f, 0.0f, 1.0f);//使用欧拉角旋转时的旋转轴
 
-const float YAW = -90.0f;
-const float PITCH = 0.0f;
-const float SPEED = 2.5f;
-const float SENSITIVITY = 0.05f;
-const float ZOOM = 45.0f;
+const float YAW = -90.0f;//偏转角
+const float PITCH = 0.0f;//俯仰角
+const float SENSITIVITY = 0.05f;//鼠标灵敏度
+const float ZOOM = 45.0f;//初始缩放
 
 
 class Camera {
@@ -33,12 +32,11 @@ public:
     float Yaw;
     float Pitch;
 
-    float MovementSpeed;
     float MouseSensitivity;
     float Zoom;
 
     Camera(vec3 position = vec3(0.0f, 0.0f, 0.0f), vec3 up = vec3(0.0f, 1.0f, 0.0f), float yaw = YAW,
-           float pitch = PITCH) : Front(vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY),
+           float pitch = PITCH) : Front(vec3(0.0f, 0.0f, -1.0f)), MouseSensitivity(SENSITIVITY),
                                   Zoom(ZOOM) {
         Position = position;
         lastPosition = vec3(0, 0, 0);
@@ -48,18 +46,10 @@ public:
         updateCameraVectors();
     }
 
-    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(
-            vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM) {
-        Position = vec3(posX, posY, posZ);
-        WorldUp = vec3(upX, upY, upZ);
-        Yaw = yaw;
-        Pitch = pitch;
-        updateCameraVectors();
-    }
-
     mat4 getViewMatrix() {
         return lookAt(Position, vec3(0, 0, 0), Up);
     }
+
     bool ifInverseUp = false;
 
     void processMouseMovement(float xoffset, float yoffset) {
@@ -86,10 +76,10 @@ public:
 
     void ProcessMouseScroll(float yoffset) {
         Zoom -= (float) yoffset;
-        if (Zoom < 1.0f)
-            Zoom = 1.0f;
-        if (Zoom > 89.0f)
-            Zoom = 89.0f;
+        if (Zoom < 25.0f)
+            Zoom = 25.0f;
+        if (Zoom > 70.0f)
+            Zoom = 70.0f;
     }
 
 private:

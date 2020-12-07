@@ -92,6 +92,8 @@ namespace Render {
         glGenVertexArrays(NumVAOs, MagicCubeVAO);
         glGenBuffers(NumBuffers, MagicCubeVBO);
 
+        setCubeCentralVertices();
+
         draw();
 
         initialize = true;
@@ -105,13 +107,14 @@ namespace Render {
         glVertexAttribPointer(LocationValue, NUM_VERTICES, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
         glEnableVertexAttribArray(LocationValue++);
         glBindBuffer(GL_ARRAY_BUFFER, MagicCubeVBO[BufferCounter++]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(colors[0]), colors[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(LocationValue, NUM_VERTICES, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
-        glEnableVertexAttribArray(LocationValue++);
+//        glBufferData(GL_ARRAY_BUFFER, sizeof(colors[0]), colors[0], GL_STATIC_DRAW);
+//        glVertexAttribPointer(LocationValue, NUM_VERTICES, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
+//        glEnableVertexAttribArray(LocationValue++);
         resetLocationValue();
     }
 
     void render() {
+        setMagicCubeVertices();
         view = camera->getViewMatrix();
         projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
 
@@ -127,14 +130,21 @@ namespace Render {
         projectionLocation = glGetUniformLocation(cubeShader->getProgramId(), "projection");
         glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, value_ptr(projection));
 
-        glBindVertexArray(MagicCubeVAO[VAOCounter]);
+        modelLocation = glGetUniformLocation(cubeShader->getProgramId(), "model");
+        glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(model));
+
+        glBindVertexArray(MagicCubeVAO[0]);
         cubeShader->use();
-        for(int i=0;i<NumCubes;i++) {
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
             model = mat4(1.0f);
-            model = translate(model,worldPositions[i]);
+            model = translate(model, cubePositions[i][j][k]);
             modelLocation = glGetUniformLocation(cubeShader->getProgramId(), "model");
             glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(model));
             glDrawArrays(GL_TRIANGLES, 0, NUM_TRIANGLES);
+                }
+            }
         }
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();

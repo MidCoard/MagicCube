@@ -13,7 +13,7 @@ void updateGameState() {
 int count=0;
 void handleInput() {
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(Render::getWindow()->getWindow(), true);//ESC
+        glfwSetWindowShouldClose(Render::getWindow()->getWindow(), true);//退出游戏
 
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
         glfwSetInputMode(Render::getWindow()->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -24,7 +24,8 @@ void handleInput() {
     }//捕捉鼠标
 
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_R) == GLFW_PRESS){
-        Render::camera->Position = glm::vec3(Render::CAMERA_POSITION);
+        delete(Render::camera);
+        Render::camera = new Camera(Render::CAMERA_POSITION);
         xAXIS = glm::vec3(1.0f,0.0f,0.0f);
     }//复位
 #ifdef DEBUG

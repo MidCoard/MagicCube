@@ -9,7 +9,7 @@
 
 #define ErrorCode -1
 
-const float WindowColor[4]={0.0f,0.5f,0.5f,1.0f};
+const float WindowColor[4]={0.0f,0.0f,0.0f,1.0f};
 const unsigned int Red = 0;
 const unsigned int Green = 1;
 const unsigned int Blue = 2;

@@ -5,74 +5,96 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#define CUBE_LENGTH 0.08f
-#define MAGIC_CUBE_LENGTH 0.3f
+#define CUBE_LENGTH 0.5f
+#define GAP 0.1f
 
-#define NumCubes 27
-#define NumVertices 108
+#define NUM_CUBES 27
+#define NUM_VERTICES 108
 
 using namespace glm;
 
-float colors[2][9]={
-        {1.0f, 0.0f, 0.0f,
-         1.0f, 0.0f, 0.0f,
-         1.0f, 0.0f, 0.0f},
+float cubeVertices[NUM_VERTICES] = {
+        -CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH,
+        CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH,
+        CUBE_LENGTH, CUBE_LENGTH, -CUBE_LENGTH,
+        CUBE_LENGTH, CUBE_LENGTH, -CUBE_LENGTH,
+        -CUBE_LENGTH, CUBE_LENGTH, -CUBE_LENGTH,
+        -CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH,
 
-        {0.0f, 0.0f, 1.0f,
-         0.0f, 0.0f, 1.0f,
-         0.0f, 0.0f, 1.0f}
-};
-float cubeVertices[NumVertices]={
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
+        -CUBE_LENGTH, -CUBE_LENGTH, CUBE_LENGTH,
+        CUBE_LENGTH, -CUBE_LENGTH, CUBE_LENGTH,
+        CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH,
+        CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH,
+        -CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH,
+        -CUBE_LENGTH, -CUBE_LENGTH, CUBE_LENGTH,
 
-        -0.5f, -0.5f,  0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
+        -CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH,
+        -CUBE_LENGTH, CUBE_LENGTH, -CUBE_LENGTH,
+        -CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH,
+        -CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH,
+        -CUBE_LENGTH, -CUBE_LENGTH, CUBE_LENGTH,
+        -CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH,
 
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
+        CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH,
+        CUBE_LENGTH, CUBE_LENGTH, -CUBE_LENGTH,
+        CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH,
+        CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH,
+        CUBE_LENGTH, -CUBE_LENGTH, CUBE_LENGTH,
+        CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH,
 
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
+        -CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH,
+        CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH,
+        CUBE_LENGTH, -CUBE_LENGTH, CUBE_LENGTH,
+        CUBE_LENGTH, -CUBE_LENGTH, CUBE_LENGTH,
+        -CUBE_LENGTH, -CUBE_LENGTH, CUBE_LENGTH,
+        -CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH,
 
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
+        -CUBE_LENGTH, CUBE_LENGTH, -CUBE_LENGTH,
+        CUBE_LENGTH, CUBE_LENGTH, -CUBE_LENGTH,
+        CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH,
+        CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH,
+        -CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH,
+        -CUBE_LENGTH, CUBE_LENGTH, -CUBE_LENGTH
+};      //Local Space //One Cube
 
-        -0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f
-};      //Local Space
+vec3 cubePositions[3][3][3];//World Space //27 Cubes
 
-vec3 worldPositions[NumCubes]={
-        vec3(0.5f,0.0f,0.0f),
-        vec3(0.0f,0.0f,0.0f),
-};      //World Space
+vec3 cubeCentralVertices[NUM_CUBES];
 
-void setCubeVertices(int x,int y,int z){
+void setCubeCentralVertices() {
+    int count = 0;
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            for (int k = -1; k <= 1; k++) {
+                cubeCentralVertices[count++] = vec3(i, j, k);
+            }
+        }
+        cout << endl;
+    }
+}
+void setMagicCubeVertices(){
+    int count = 0;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) {
+                cubePositions[i][j][k] =
+                        vec3((cubeCentralVertices[count].x) * (2 * CUBE_LENGTH + GAP),
+                             (cubeCentralVertices[count].y) * (2 * CUBE_LENGTH + GAP),
+                             (cubeCentralVertices[count].z) * (2 * CUBE_LENGTH + GAP));
+                count++;
+            }
+        }
+    }
+}
+void ROTATE(float degrees){
+    for (int i = 0; i < 1; i++) {
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) {
+                vec4 cubeCentralVerticesv4 = vec4(cubeCentralVertices[i],1.0f);
 
+            }
+        }
+    }
 }
 
-#endif //MAGICCUBE_SETVERTICES_H
+#endif
