@@ -10,7 +10,6 @@ void render() {
 void updateGameState() {
     Logic::updateGameState();
 }
-int count=0;
 void handleInput() {
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(Render::getWindow()->getWindow(), true);//退出游戏
@@ -28,6 +27,14 @@ void handleInput() {
         Render::camera = new Camera(Render::CAMERA_POSITION);
         xAXIS = glm::vec3(1.0f,0.0f,0.0f);
     }//复位
+    int count=0;
+    if(glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_A) == GLFW_PRESS){
+        count++;
+        if(count==1) ROTATE(45.0f);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_A) == GLFW_RELEASE){
+        count=0;
+    }
 #ifdef DEBUG
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_P) == GLFW_PRESS){
         count++;

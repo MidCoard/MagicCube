@@ -87,11 +87,15 @@ void setMagicCubeVertices(){
     }
 }
 void ROTATE(float degrees){
+    int count=0;
     for (int i = 0; i < 1; i++) {
         for (int j = 0; j < 3; j++) {
             for (int k = 0; k < 3; k++) {
-                vec4 cubeCentralVerticesv4 = vec4(cubeCentralVertices[i],1.0f);
-
+                vec4 cubeCentralVerticesv4 = vec4(cubeCentralVertices[count],1.0f);
+                mat4 translayer = mat4(1.0f);
+                translayer = rotate(translayer,radians(degrees),vec3(-1.0f,0.0f,0.0f));
+                cubeCentralVerticesv4 = translayer * cubeCentralVerticesv4;
+                cubeCentralVertices[count++] = vec3(cubeCentralVerticesv4);
             }
         }
     }
