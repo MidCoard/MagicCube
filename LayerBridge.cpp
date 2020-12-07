@@ -28,6 +28,13 @@ void handleInput() {
         Render::camera = new Camera(Render::CAMERA_POSITION);
         xAXIS = glm::vec3(1.0f,0.0f,0.0f);
     }//复位
+
+    if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_Q) == GLFW_PRESS) {
+        while (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_Q) == GLFW_PRESS) {
+
+        }
+        Logic::changeDirection();
+    }
 #ifdef DEBUG
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_P) == GLFW_PRESS){
         count++;

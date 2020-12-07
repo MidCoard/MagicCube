@@ -1,6 +1,6 @@
 #include <cstdio>
 #include "LayerBridge.cpp"
-#include "util.cpp"
+#include "util.h"
 #include "RenderPoint.h"
 
 using namespace std;
