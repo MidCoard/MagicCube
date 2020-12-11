@@ -9,11 +9,13 @@
 
 #define ErrorCode -1
 
+enum WindowColor{
+    R,
+    G,
+    B,
+    A
+};
 const float WindowColor[4]={0.0f,0.0f,0.0f,1.0f};
-const unsigned int Red = 0;
-const unsigned int Green = 1;
-const unsigned int Blue = 2;
-const unsigned int Alpha = 3;
 
 using namespace std;
 

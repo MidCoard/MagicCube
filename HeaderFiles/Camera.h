@@ -9,14 +9,19 @@
 
 using namespace glm;
 
-vec3 xAXIS = vec3(1.0f, 0.0f, 0.0f);
-vec3 yAXIS = vec3(0.0f, 1.0f, 0.0f);
-vec3 zAXIS = vec3(0.0f, 0.0f, 1.0f);//使用欧拉角旋转时的旋转轴
+const vec3 standardXAxis = vec3(1.0f, 0.0f, 0.0f);
+const vec3 standardYAxis = vec3(0.0f, 1.0f, 0.0f);
+const vec3 standardZAxis = vec3(0.0f, 0.0f, 1.0f);//旋转魔方时的旋转轴 它们是不变的
+vec3 XAxis = vec3(1.0f, 0.0f, 0.0f);
+vec3 YAxis = vec3(0.0f, 1.0f, 0.0f);
+vec3 ZAxis = vec3(0.0f, 0.0f, 1.0f);//使用欧拉角旋转时的旋转轴 会随视角改变
 
 const float YAW = -90.0f;//偏转角
 const float PITCH = 0.0f;//俯仰角
 const float SENSITIVITY = 0.05f;//鼠标灵敏度
-const float ZOOM = 45.0f;//初始缩放
+const float ZOOM = 45.0f;//初始缩放值
+
+const vec3 CAMERA_POSITION = vec3(3.0f, 5.0f, 8.0f);//初始相机位置
 
 
 class Camera {
@@ -59,15 +64,15 @@ public:
         vec4 positionv4 = vec4(Position, 1.0f);
         mat4 transx = mat4(1.0f);
         mat4 transy = mat4(1.0f);
-        transx = rotate(transx, radians(-xoffset), yAXIS);
-        vec4 xAXISv4 = vec4(xAXIS, 1.0f);
+        transx = rotate(transx, radians(-xoffset), YAxis);
+        vec4 xAXISv4 = vec4(XAxis, 1.0f);
         xAXISv4 = transx * xAXISv4;
-        xAXIS = vec3(xAXISv4);
-        transy = rotate(transy, radians(yoffset), xAXIS);
+        XAxis = vec3(xAXISv4);
+        transy = rotate(transy, radians(yoffset), XAxis);
         positionv4 = transy * transx * positionv4;
         Position = vec3(positionv4);
 
-        if ((Position.x >= -1.0f) && (Position.x <= 1.0f) && (lastPosition.z * Position.z <= 0)) {
+        if ((Position.x >= -1.5f) && (Position.x <= 1.5f) && (lastPosition.z * Position.z <= 0)) {
             ifInverseUp = !ifInverseUp;
         }
 
@@ -90,8 +95,12 @@ private:
         front.z = sin(radians(Yaw)) * cos(radians(Pitch));
         Front = normalize(front);
         Right = normalize(cross(Front, WorldUp));
-        if (!ifInverseUp) Up = normalize(cross(Right, Front));
-        else Up = -normalize(cross(Right, Front));
+        if (!ifInverseUp) {
+            Up = normalize(cross(Right, Front));
+        }
+        else {
+            Up = -normalize(cross(Right, Front));
+        }
         lastPosition = Position;
     }
 };

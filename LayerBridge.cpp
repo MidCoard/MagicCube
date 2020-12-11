@@ -1,18 +1,19 @@
 #include "Layers/LogicLayer.cpp"
 #include "Layers/RenderLayer.cpp"
 
-#define DEBUG
 
-void render() {
-    Render::render();
+float rotateSpeed = 2.0f;
+void render(double elapsed) {
+    Render::render(elapsed);
 }
 
 void updateGameState() {
     Logic::updateGameState();
 }
 void handleInput() {
-    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(Render::getWindow()->getWindow(), true);//退出游戏
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(Render::getWindow()->getWindow(), true);
+    }//退出游戏
 
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
         glfwSetInputMode(Render::getWindow()->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -22,26 +23,89 @@ void handleInput() {
         glfwSetInputMode(Render::getWindow()->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }//捕捉鼠标
 
-    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_R) == GLFW_PRESS){
-        delete(Render::camera);
-        Render::camera = new Camera(Render::CAMERA_POSITION);
-        xAXIS = glm::vec3(1.0f,0.0f,0.0f);
-    }//复位
-    int count=0;
-    if(glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_A) == GLFW_PRESS){
-        count++;
-        if(count==1) ROTATE(45.0f);
-    }
-    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_A) == GLFW_RELEASE){
-        count=0;
-    }
-#ifdef DEBUG
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_P) == GLFW_PRESS){
-        count++;
-        if(count==1) printf("%10f,%10f,%10f\n",Render::camera->Position.x,Render::camera->Position.y,Render::camera->Position.z);
+        delete(Render::camera);
+        Render::camera = new Camera(CAMERA_POSITION);
+        XAxis = standardXAxis;
+        Render::currentModel = mat4(1.0f);
+    }//恢复正视角
+
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_RIGHT_ALT) == GLFW_PRESS){
+        for(int i=0;i<NUM_CUBES;i++){
+        Render::allCubesState[i] = mat4(1.0f);
+        }
+    }//还原魔方至初始状态
+
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_Q) == GLFW_PRESS)
+    {
+        Render::rotate_Y_1(-90);
     }
-    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_P) == GLFW_RELEASE){
-        count=0;
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_W) == GLFW_PRESS)
+    {
+        Render::rotate_Y_1(90);
     }
-#endif
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_A) == GLFW_PRESS)
+    {
+        Render::rotate_Y_2(-90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_S) == GLFW_PRESS)
+    {
+        Render::rotate_Y_2(90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_Z) == GLFW_PRESS)
+    {
+        Render::rotate_Y_3(-90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_X) == GLFW_PRESS)
+    {
+        Render::rotate_Y_3(90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_U) == GLFW_PRESS)
+    {
+        Render::rotate_X_1(-90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_J) == GLFW_PRESS)
+    {
+        Render::rotate_X_1(90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_I) == GLFW_PRESS)
+    {
+        Render::rotate_X_2(-90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_K) == GLFW_PRESS)
+    {
+        Render::rotate_X_2(90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_O) == GLFW_PRESS)
+    {
+        Render::rotate_X_3(-90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_L) == GLFW_PRESS)
+    {
+        Render::rotate_X_3(90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_1) == GLFW_PRESS)
+    {
+        Render::rotate_Z_1(-90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_0) == GLFW_PRESS)
+    {
+        Render::rotate_Z_1(90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_2) == GLFW_PRESS)
+    {
+        Render::rotate_Z_2(-90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_9) == GLFW_PRESS)
+    {
+        Render::rotate_Z_2(90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_3) == GLFW_PRESS)
+    {
+        Render::rotate_Z_3(-90);
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_8) == GLFW_PRESS)
+    {
+        Render::rotate_Z_3(90);
+    }
 }

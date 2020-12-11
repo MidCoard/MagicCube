@@ -13,7 +13,6 @@ namespace Logic {
     void initLogicLayer() {
         if (initialize)
             return;
-        //todo
         initialize = true;
     }
 }

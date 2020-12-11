@@ -1,12 +1,10 @@
 #include <cstdio>
 #include "LayerBridge.cpp"
-#include "util.cpp"
-#include "RenderPoint.h"
+#include "util.h"
 
 using namespace std;
 
 void initialize() {
-//    initRenderPoint();
     Logic::initLogicLayer();
     Render::initRenderLayer();
 }
@@ -42,7 +40,7 @@ int main() {
                 updateGameState();
                 steps -= secsPerUpdate;
             }
-            render();
+            render(elapsed);
             sync(loopStartTime);
             if (getTime() - last >= 1) {
                 last++;
