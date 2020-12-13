@@ -18,14 +18,6 @@ const vec3 standardXAxis = vec3(1.0f, 0.0f, 0.0f);
 const vec3 standardYAxis = vec3(0.0f, 1.0f, 0.0f);
 const vec3 standardZAxis = vec3(0.0f, 0.0f, 1.0f);//旋转魔方时的旋转轴 它们是不变的
 
-const Color red = Color(1.0f, 0.1f, 0.1f);
-const Color white = Color(1.0f, 1.0f, 1.0f);
-const Color blue = Color(0.1f, 0.6f, 1.0f);
-const Color yellow = Color(1.0f, 1.0f, 0.1f);
-const Color green = Color(0.1f, 1.0f, 0.1f);
-const Color orange = Color(1.0f, 0.6f, 0.1f);
-const Color black = Color(0.5f, 0.5f, 0.5f);
-
 vec3 localCubeVertices[NUM_VERTICES] = {
         vec3(-CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH),
         vec3(CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH),

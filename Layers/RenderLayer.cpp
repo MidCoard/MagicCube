@@ -153,7 +153,9 @@ namespace Render {
         initialize = true;
     }
 
-    void
+    void setColors(Color up,Color down,Color front,Color back,Color left,Color right) {
+
+    }
 
     void attributePointer() {
         glBindVertexArray(MagicCubeVAO);
