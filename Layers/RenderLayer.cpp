@@ -102,12 +102,12 @@ namespace Render {
     vec3 rotationVector;
     mutex cubeMutex;
 
-    GLuint MagicCubeVAO,MagicCubeVBO;
+    GLuint MagicCubeVAO, MagicCubeVBO;
     GLuint ColorVBO;
 //////////////////////////////////////////////////////////////////////////////////////light
 
     Shader *lightShader;
-    GLuint lightVAO,lightVBO;
+    GLuint lightVAO, lightVBO;
     GLuint normalVBO;
     vec3 lightPosition = CAMERA_POSITION;
     mat4 lightModel = mat4(1.0f);
@@ -126,7 +126,7 @@ namespace Render {
         mainWindow = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
         cubeShader = new Shader("Shaders/MagicCube.vs", "Shaders/MagicCube.fs");
         lightShader = new Shader("Shaders/Light.vs", "Shaders/Light.fs");
-        textShader = new Shader("Shaders/Text.vs","Shaders/Text.fs");
+        textShader = new Shader("Shaders/Text.vs", "Shaders/Text.fs");
         camera = new Camera(CAMERA_POSITION);
 
         projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
@@ -153,7 +153,7 @@ namespace Render {
         initialize = true;
     }
 
-    void setColors(Color up,Color down,Color front,Color back,Color left,Color right) {
+    void setColors(Color up, Color down, Color front, Color back, Color left, Color right) {
 
     }
 
@@ -181,7 +181,7 @@ namespace Render {
         LocationValue = 0;
 
         glGenVertexArrays(1, &lightVAO);
-        glGenBuffers(1,&lightVBO);
+        glGenBuffers(1, &lightVBO);
         glBindVertexArray(lightVAO);
         glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(localCubeVertices), localCubeVertices, GL_STATIC_DRAW);
@@ -212,17 +212,17 @@ namespace Render {
 
         cubeShader->setVec3("lightColor", lightColor);
 
-        cubeShader->setVec3("lightPos",lightPosition);
+        cubeShader->setVec3("lightPos", lightPosition);
 
-        cubeShader->setVec3("viewPos",camera->Position);
+        cubeShader->setVec3("viewPos", camera->Position);
     }
 
-    void setLightMatrix(){
+    void setLightMatrix() {
         view = camera->getViewMatrix();
 
         lightShader->setMat4("transform", transform);
 
-        lightShader->setMat4("lightModel",lightModel);
+        lightShader->setMat4("lightModel", lightModel);
 
         lightShader->setMat4("view", view);
 
@@ -230,7 +230,7 @@ namespace Render {
 
         lightShader->setVec3("lightColor", lightColor);
 
-        lightShader->setVec3("lightPos",lightPosition);
+        lightShader->setVec3("lightPos", lightPosition);
     }
 
     bool ignoreKeyboardInput = false;
@@ -497,9 +497,9 @@ namespace Render {
     void clear() {
         glDeleteVertexArrays(1, &MagicCubeVAO);
         glDeleteBuffers(1, &MagicCubeVBO);
-        glDeleteBuffers(1,&ColorVBO);
-        glDeleteVertexArrays(1,&lightVAO);
-        glDeleteBuffers(1,&lightVBO);
+        glDeleteBuffers(1, &ColorVBO);
+        glDeleteVertexArrays(1, &lightVAO);
+        glDeleteBuffers(1, &lightVBO);
         glfwTerminate();
     }
 
