@@ -5,24 +5,21 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include"HeaderFiles/SetVertices.h"
+
 #include <vector>
 
 using namespace glm;
 
-const vec3 standardXAxis = vec3(1.0f, 0.0f, 0.0f);
-const vec3 standardYAxis = vec3(0.0f, 1.0f, 0.0f);
-const vec3 standardZAxis = vec3(0.0f, 0.0f, 1.0f);//旋转魔方时的旋转轴 它们是不变的
-vec3 XAxis = vec3(1.0f, 0.0f, 0.0f);
-vec3 YAxis = vec3(0.0f, 1.0f, 0.0f);
-vec3 ZAxis = vec3(0.0f, 0.0f, 1.0f);//使用欧拉角旋转时的旋转轴 会随视角改变
-
 const float YAW = -90.0f;//偏转角
 const float PITCH = 0.0f;//俯仰角
 const float SENSITIVITY = 0.05f;//鼠标灵敏度
-const float ZOOM = 45.0f;//初始缩放值
+float ZOOM = 45.0f;//初始缩放值
 
 const vec3 CAMERA_POSITION = vec3(3.0f, 5.0f, 8.0f);//初始相机位置
 
+vec3 YAxis = vec3(0.0f, 1.0f, 0.0f);
+vec3 XAxis = -normalize(cross(vec3(CAMERA_POSITION),YAxis));//使用欧拉角旋转时的旋转轴 会随视角改变
 
 class Camera {
 public:
@@ -41,7 +38,7 @@ public:
     float Zoom;
 
     Camera(vec3 position = vec3(0.0f, 0.0f, 0.0f), vec3 up = vec3(0.0f, 1.0f, 0.0f), float yaw = YAW,
-           float pitch = PITCH) : Front(vec3(0.0f, 0.0f, -1.0f)), MouseSensitivity(SENSITIVITY),
+           float pitch = PITCH) : Front(-normalize(CAMERA_POSITION)), MouseSensitivity(SENSITIVITY),
                                   Zoom(ZOOM) {
         Position = position;
         lastPosition = vec3(0, 0, 0);
@@ -72,7 +69,7 @@ public:
         positionv4 = transy * transx * positionv4;
         Position = vec3(positionv4);
 
-        if ((Position.x >= -1.5f) && (Position.x <= 1.5f) && (lastPosition.z * Position.z <= 0)) {
+        if (((Position.x >= -1.5f) && (Position.x <= 1.5f)) && (lastPosition.z * Position.z <= 0)) {
             ifInverseUp = !ifInverseUp;
         }
 
@@ -85,6 +82,10 @@ public:
             Zoom = 25.0f;
         if (Zoom > 70.0f)
             Zoom = 70.0f;
+    }
+
+    ~Camera(){
+        ZOOM = Zoom;
     }
 
 private:

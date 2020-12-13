@@ -15,7 +15,7 @@ enum WindowColor{
     B,
     A
 };
-const float WindowColor[4]={0.0f,0.0f,0.0f,1.0f};
+const float WindowColor[4]={0.1f,0.2f,0.3f,1.0f};
 
 using namespace std;
 
