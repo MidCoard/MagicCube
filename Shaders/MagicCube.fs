@@ -12,9 +12,9 @@ uniform vec3 viewPos;
 
 void main()
 {
-    float ambientStrength = 0.4f;
-    float diffuseStrength = 0.7f;
-    float specularStrength = 0.5f;
+    float ambientStrength = 0.3f;
+    float diffuseStrength = 0.8f;
+    float specularStrength = 0.5f;  //光源参数
 
     vec3 ambient = ambientStrength * lightColor;
 

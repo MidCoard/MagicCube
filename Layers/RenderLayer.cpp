@@ -1,14 +1,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <mutex>
-#include <map>
-#include <ft2build.h>
 
 #include "Shader.h"
 #include "GLWindows.h"
 #include "Camera.h"
 #include "MagicCube.h"
 #include "SetVertices.h"
+#include "Text.h"
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1080
@@ -57,15 +56,6 @@ enum ROTATE_FLAG {
 #define Z_2 z > -0.01f && z < 0.01f
 #define Z_3 z > -(2*CUBE_LENGTH+GAP)-0.01f && z < -(2*CUBE_LENGTH+GAP)+0.01f //划定每层的坐标范围，这里取一个小区间避免定位失败
 
-struct Character {
-    GLuint     TextureID;  // 字形纹理的ID
-    glm::ivec2 Size;       // 字形大小
-    glm::ivec2 Bearing;    // 从基准线到字形左部/顶部的偏移值
-    GLuint     Advance;    // 原点距下一个字形原点的距离
-};
-
-map<GLchar, Character> Characters;
-
 namespace Render {
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -112,27 +102,31 @@ namespace Render {
     vec3 rotationVector;
     mutex cubeMutex;
 
-    unsigned int MagicCubeVAO;
-    unsigned int MagicCubeVBO;
-    unsigned int ColorVBO;
+    GLuint MagicCubeVAO,MagicCubeVBO;
+    GLuint ColorVBO;
 //////////////////////////////////////////////////////////////////////////////////////light
 
     Shader *lightShader;
-    unsigned int lightVAO;
-    unsigned int lightVBO;
-    unsigned int normalVBO;
+    GLuint lightVAO,lightVBO;
+    GLuint normalVBO;
     vec3 lightPosition = CAMERA_POSITION;
     mat4 lightModel = mat4(1.0f);
     vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
+
+    Shader *textShader;
+    GLuint textVAO, textVBO;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
     void initRenderLayer() {
         if (initialize)
             return;
 
+//        loadText();
+
         mainWindow = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
         cubeShader = new Shader("Shaders/MagicCube.vs", "Shaders/MagicCube.fs");
         lightShader = new Shader("Shaders/Light.vs", "Shaders/Light.fs");
+        textShader = new Shader("Shaders/Text.vs","Shaders/Text.fs");
         camera = new Camera(CAMERA_POSITION);
 
         projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
@@ -146,6 +140,9 @@ namespace Render {
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_ALPHA_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glGenVertexArrays(1, &MagicCubeVAO);
 
         attributePointer();
@@ -155,6 +152,8 @@ namespace Render {
 
         initialize = true;
     }
+
+    void
 
     void attributePointer() {
         glBindVertexArray(MagicCubeVAO);
@@ -177,13 +176,27 @@ namespace Render {
         glVertexAttribPointer(LocationValue, NUM_READIN, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
         glEnableVertexAttribArray(LocationValue++);//链接颜色
 
+        LocationValue = 0;
+
         glGenVertexArrays(1, &lightVAO);
         glGenBuffers(1,&lightVBO);
         glBindVertexArray(lightVAO);
         glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(localCubeVertices), localCubeVertices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, NUM_READIN, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
-        glEnableVertexAttribArray(0);//链接光源顶点
+        glVertexAttribPointer(LocationValue, NUM_READIN, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
+        glEnableVertexAttribArray(LocationValue++);//链接光源顶点
+
+        LocationValue = 0;
+
+        glGenVertexArrays(1, &textVAO);
+        glGenBuffers(1, &textVBO);
+        glBindVertexArray(textVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(LocationValue, 4, GL_FLOAT, GL_FALSE, STRIDE(4), OFFSET_NULL);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(LocationValue++);//链接文字信息
     }
 
     void setCubeMatrix() {
@@ -221,6 +234,8 @@ namespace Render {
     bool ignoreKeyboardInput = false;
 
     void render(double elapsed) {
+//        renderText(textShader, "(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, vec3(0.3, 0.7f, 0.9f));
+
         lightPosition = camera->Position;
         projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
 
@@ -230,7 +245,7 @@ namespace Render {
 //        lightShader->use();
 //        setLightMatrix();
 //        glBindVertexArray(lightVAO);
-//        glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_TRIANGLES);
+//        glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_TRIANGLES);//绘制光源
 
         cubeShader->use();
         setCubeMatrix();

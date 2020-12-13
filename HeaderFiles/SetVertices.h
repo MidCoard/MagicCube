@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "Color.h"
 
 #define CUBE_LENGTH 0.5f
 #define GAP 0.03f
@@ -17,13 +18,13 @@ const vec3 standardXAxis = vec3(1.0f, 0.0f, 0.0f);
 const vec3 standardYAxis = vec3(0.0f, 1.0f, 0.0f);
 const vec3 standardZAxis = vec3(0.0f, 0.0f, 1.0f);//旋转魔方时的旋转轴 它们是不变的
 
-const vec3 red = vec3(1.0f, 0.1f, 0.1f);
-const vec3 white = vec3(1.0f, 1.0f, 1.0f);
-const vec3 blue = vec3(0.1f, 0.6f, 1.0f);
-const vec3 yellow = vec3(1.0f, 1.0f, 0.1f);
-const vec3 green = vec3(0.1f, 1.0f, 0.1f);
-const vec3 orange = vec3(1.0f, 0.6f, 0.1f);
-const vec3 black = vec3(0.5f, 0.5f, 0.5f);
+const Color red = Color(1.0f, 0.1f, 0.1f);
+const Color white = Color(1.0f, 1.0f, 1.0f);
+const Color blue = Color(0.1f, 0.6f, 1.0f);
+const Color yellow = Color(1.0f, 1.0f, 0.1f);
+const Color green = Color(0.1f, 1.0f, 0.1f);
+const Color orange = Color(1.0f, 0.6f, 0.1f);
+const Color black = Color(0.5f, 0.5f, 0.5f);
 
 vec3 localCubeVertices[NUM_VERTICES] = {
         vec3(-CUBE_LENGTH, -CUBE_LENGTH, -CUBE_LENGTH),
@@ -113,7 +114,7 @@ vec3 normalVector[NUM_VERTICES]={
         standardZAxis
 };
 
-vec3 Colors[36] = {
+Color Colors[36] = {
         red, red, red, red, red, red,
         orange, orange, orange, orange, orange, orange,
         white, white, white, white, white, white,
@@ -185,44 +186,44 @@ int colors[] = {
         NONE, UP, NONE, RIGHT, NONE, FRONT,
 };
 
-vec3 magicCubeColors[NUM_CUBES][NUM_VERTICES];
-
-void setColor() {
-    int counter = 0;
-    int counter1 = 0;
-    int colorCounter = 0;
-    while (counter < NUM_CUBES * 6) {
-        for (int i = 0; i < 6; i++) {
-            switch (colors[counter]) {
-                case RIGHT:
-                    magicCubeColors[colorCounter][counter1++] = red;
-                    break;
-                case DOWN:
-                    magicCubeColors[colorCounter][counter1++] = white;
-                    break;
-                case FRONT:
-                    magicCubeColors[colorCounter][counter1++] = blue;
-                    break;
-                case UP:
-                    magicCubeColors[colorCounter][counter1++] = yellow;
-                    break;
-                case BACK:
-                    magicCubeColors[colorCounter][counter1++] = green;
-                    break;
-                case LEFT:
-                    magicCubeColors[colorCounter][counter1++] = orange;
-                    break;
-                case NONE:
-                    magicCubeColors[colorCounter][counter1++] = black;
-                    break;
-            }
-            if (counter1 == 36) counter1 = 0;
-        }
-        if ((counter + 1) / 6 == 0) colorCounter++;
-        counter++;
-    }
-    cout << sizeof(magicCubeColors) << endl;
-    cout << sizeof(magicCubeColors) / sizeof(float) << endl;
-}
+//vec3 magicCubeColors[NUM_CUBES][NUM_VERTICES];
+//
+//void setColor() {
+//    int counter = 0;
+//    int counter1 = 0;
+//    int colorCounter = 0;
+//    while (counter < NUM_CUBES * 6) {
+//        for (int i = 0; i < 6; i++) {
+//            switch (colors[counter]) {
+//                case RIGHT:
+//                    magicCubeColors[colorCounter][counter1++] = red;
+//                    break;
+//                case DOWN:
+//                    magicCubeColors[colorCounter][counter1++] = white;
+//                    break;
+//                case FRONT:
+//                    magicCubeColors[colorCounter][counter1++] = blue;
+//                    break;
+//                case UP:
+//                    magicCubeColors[colorCounter][counter1++] = yellow;
+//                    break;
+//                case BACK:
+//                    magicCubeColors[colorCounter][counter1++] = green;
+//                    break;
+//                case LEFT:
+//                    magicCubeColors[colorCounter][counter1++] = orange;
+//                    break;
+//                case NONE:
+//                    magicCubeColors[colorCounter][counter1++] = black;
+//                    break;
+//            }
+//            if (counter1 == 36) counter1 = 0;
+//        }
+//        if ((counter + 1) / 6 == 0) colorCounter++;
+//        counter++;
+//    }
+//    cout << sizeof(magicCubeColors) << endl;
+//    cout << sizeof(magicCubeColors) / sizeof(float) << endl;
+//}
 
 #endif

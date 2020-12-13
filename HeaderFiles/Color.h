@@ -30,6 +30,10 @@ public:
         this->g;
         this->b;
     }
+
+    vec3 toVec3() {
+        return vec3(r/255,g/255,b/255);
+    }
 };
 
 
