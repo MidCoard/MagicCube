@@ -127,6 +127,10 @@ public:
     MagicCubeBlock getBlock(int x,int y) {
         return blocks[x][y];
     }
+
+    void setBlock(int x,int y,MagicCubeBlock magicCubeBlock) {
+        blocks[x][y] = magicCubeBlock;
+    }
 };
 
 class MediumMagicCubeBlocks {
@@ -135,6 +139,10 @@ private:
 public:
     MagicCubeBlock getBlock(int x,int y) {
         return blocks[x][y];
+    }
+
+    void setBlock(int x,int y,MagicCubeBlock magicCubeBlock) {
+        blocks[x][y] = magicCubeBlock;
     }
 };
 
@@ -198,6 +206,189 @@ public:
         else if (z == 2)
             return this->getHeader().getBlock(x, y);
         return NULL_BLOCK;
+    }
+
+
+    void setBlock(int x,int y,int z,MagicCubeBlock magicCubeBlock) {
+        if (z == 0)
+            this->getFooter().setBlock(x,y,magicCubeBlock);
+        else if (z == 1)
+            this->getMedium().setBlock(x,y,magicCubeBlock);
+        else if (z == 2)
+            this->getHeader().setBlock(x,y,magicCubeBlock);
+    }
+
+    void rotate_X_1() {
+        MagicCubeBlock zero = getBlock(0,0,0);
+        setBlock(0,0,0,getBlock(0,2,0));
+        setBlock(0,2,0,getBlock(0,2,2));
+        setBlock(0,2,2,getBlock(0,0,2));
+        setBlock(0,0,2,zero);
+        MagicCubeBlock one = getBlock(0,1,0);
+        setBlock(0,1,0,getBlock(0,2,1));
+        setBlock(0,2,1,getBlock(0,1,2));
+        setBlock(0,1,2,getBlock(0,0,1));
+        setBlock(0,0,1,one);
+    }
+
+    void rotate_X_1_F() {
+        rotate_X_1();
+        rotate_X_1();
+        rotate_X_1();
+    }
+
+    void rotate_X_2() {
+        MagicCubeBlock zero = getBlock(1,0,0);
+        setBlock(1,0,0,getBlock(1,2,0));
+        setBlock(1,2,0,getBlock(1,2,2));
+        setBlock(1,2,2,getBlock(1,0,2));
+        setBlock(1,0,2,zero);
+        MagicCubeBlock one = getBlock(1,1,0);
+        setBlock(1,1,0,getBlock(1,2,1));
+        setBlock(1,2,1,getBlock(1,1,2));
+        setBlock(1,1,2,getBlock(1,0,1));
+        setBlock(1,0,1,one);
+    }
+
+    void rotate_X_2_F() {
+        rotate_X_2();
+        rotate_X_2();
+        rotate_X_2();
+    }
+
+    void rotate_X_3() {
+        MagicCubeBlock zero = getBlock(2,0,0);
+        setBlock(2,0,0,getBlock(2,2,0));
+        setBlock(2,2,0,getBlock(2,2,2));
+        setBlock(2,2,2,getBlock(2,0,2));
+        setBlock(2,0,2,zero);
+        MagicCubeBlock one = getBlock(2,1,0);
+        setBlock(2,1,0,getBlock(2,2,1));
+        setBlock(2,2,1,getBlock(2,1,2));
+        setBlock(2,1,2,getBlock(2,0,1));
+        setBlock(2,0,1,one);
+    }
+
+    void rotate_X_3_F() {
+        rotate_X_3();
+        rotate_X_3();
+        rotate_X_3();
+    }
+
+
+    void rotate_Y_1() {
+        MagicCubeBlock zero = getBlock(0,2,0);
+        setBlock(0,2,0,getBlock(2,2,0));
+        setBlock(2,2,0,getBlock(2,2,2));
+        setBlock(2,2,2,getBlock(0,2,2));
+        setBlock(0,2,2,zero);
+        MagicCubeBlock one = getBlock(1,2,0);
+        setBlock(1,2,0,getBlock(2,2,1));
+        setBlock(2,2,1,getBlock(1,2,2));
+        setBlock(1,2,2,getBlock(0,2,1));
+        setBlock(0,2,1,one);
+    }
+
+    void rotate_Y_1_F() {
+        rotate_Y_1();
+        rotate_Y_1();
+        rotate_Y_1();
+    }
+
+
+    void rotate_Y_2() {
+        MagicCubeBlock zero = getBlock(0,1,0);
+        setBlock(0,1,0,getBlock(2,1,0));
+        setBlock(2,1,0,getBlock(2,1,2));
+        setBlock(2,1,2,getBlock(0,1,2));
+        setBlock(0,1,2,zero);
+        MagicCubeBlock one = getBlock(1,1,0);
+        setBlock(1,1,0,getBlock(2,1,1));
+        setBlock(2,1,1,getBlock(1,1,2));
+        setBlock(1,1,2,getBlock(0,1,1));
+        setBlock(0,1,1,one);
+    }
+
+    void rotate_Y_2_F() {
+        rotate_Y_2();
+        rotate_Y_2();
+        rotate_Y_2();
+    }
+
+    void rotate_Y_3() {
+        MagicCubeBlock zero = getBlock(0,0,0);
+        setBlock(0,0,0,getBlock(2,0,0));
+        setBlock(2,0,0,getBlock(2,0,2));
+        setBlock(2,0,2,getBlock(0,0,2));
+        setBlock(0,0,2,zero);
+        MagicCubeBlock one = getBlock(1,0,0);
+        setBlock(1,0,0,getBlock(2,0,1));
+        setBlock(2,0,1,getBlock(1,0,2));
+        setBlock(1,0,2,getBlock(0,0,1));
+        setBlock(0,0,1,one);
+    }
+
+    void rotate_Y_3_F() {
+        rotate_Y_3();
+        rotate_Y_3();
+        rotate_Y_3();
+    }
+
+    void rotate_Z_1() {
+        MagicCubeBlock zero = getBlock(0,0,0);
+        setBlock(0,0,0,getBlock(0,2,0));
+        setBlock(0,2,0,getBlock(2,2,0));
+        setBlock(2,2,0,getBlock(2,0,0));
+        setBlock(2,0,0,zero);
+        MagicCubeBlock one = getBlock(1,0,0);
+        setBlock(1,0,0,getBlock(0,1,0));
+        setBlock(0,1,0,getBlock(1,2,0));
+        setBlock(1,2,0,getBlock(2,1,0));
+        setBlock(2,1,0,one);
+    }
+
+    void rotate_Z_1_F() {
+        rotate_Z_1();
+        rotate_Z_1();
+        rotate_Z_1();
+    }
+
+    void rotate_Z_2() {
+        MagicCubeBlock zero = getBlock(0,0,1);
+        setBlock(0,0,1,getBlock(0,2,1));
+        setBlock(0,2,1,getBlock(2,2,1));
+        setBlock(2,2,1,getBlock(2,0,1));
+        setBlock(2,0,1,zero);
+        MagicCubeBlock one = getBlock(1,0,1);
+        setBlock(1,0,1,getBlock(0,1,1));
+        setBlock(0,1,1,getBlock(1,2,1));
+        setBlock(1,2,1,getBlock(2,1,1));
+        setBlock(2,1,1,one);
+    }
+
+    void rotate_Z_2_F() {
+        rotate_Z_2();
+        rotate_Z_2();
+        rotate_Z_2();
+    }
+
+    void rotate_Z_3() {
+        MagicCubeBlock zero = getBlock(0,0,2);
+        setBlock(0,0,2,getBlock(0,2,2));
+        setBlock(0,2,2,getBlock(2,2,2));
+        setBlock(2,2,2,getBlock(2,0,2));
+        setBlock(2,0,2,zero);
+        MagicCubeBlock one = getBlock(1,0,2);
+        setBlock(1,0,2,getBlock(0,1,2));
+        setBlock(0,1,2,getBlock(1,2,2));
+        setBlock(1,2,2,getBlock(2,1,2));
+        setBlock(2,1,2,one);
+    }
+
+    void rotate_Z_3_F() {
+        rotate_Z_3();
+        rotate_Z_3();
+        rotate_Z_3();
     }
 };
 
