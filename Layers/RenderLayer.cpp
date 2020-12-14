@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glut.h>
 #include <mutex>
 
 #include "Shader.h"
@@ -78,6 +79,10 @@ namespace Render {
 
     void setCubeMatrix();
 
+    void setColors(Color,Color,Color,Color,Color,Color);
+
+    void renderText(Shader* &s, string text, GLfloat, GLfloat, GLfloat, vec3);
+
     void render(double);
 
     void clear();
@@ -95,6 +100,7 @@ namespace Render {
     mat4 currentModel = mat4(1.0f);
     vector<mat4> allCubesState(NUM_CUBES, mat4(1.0f));
     const mat4 identityMatrix = mat4(1.0f);//单位矩阵
+    vec3 yaxis[NUM_CUBES];
 
     const double rotateVelocity = 4.0;
     float angle = 0.0;
@@ -121,7 +127,7 @@ namespace Render {
         if (initialize)
             return;
 
-//        loadText();
+        loadText();
 
         mainWindow = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
         cubeShader = new Shader("Shaders/MagicCube.vs", "Shaders/MagicCube.fs");
@@ -133,6 +139,10 @@ namespace Render {
         view = camera->getViewMatrix();
 
         setWorldSpace();
+        setColors(logicColors[0],logicColors[1],logicColors[2],logicColors[3],logicColors[4],logicColors[5]);
+        for(int i=0;i<NUM_CUBES;i++){
+            yaxis[i]=vec3(0.0f,1.0f,0.0f);
+        }
 
         glfwSetFramebufferSizeCallback(mainWindow->getWindow(), frameBufferSizeCallback);
         glfwSetCursorPosCallback(mainWindow->getWindow(), mouseCallback);
@@ -147,6 +157,8 @@ namespace Render {
 
         attributePointer();
 
+        cubeShader->use();
+
         lightModel = translate(lightModel, lightPosition);
         lightModel = scale(lightModel, vec3(0.2f));
 
@@ -154,7 +166,25 @@ namespace Render {
     }
 
     void setColors(Color up,Color down,Color front,Color back,Color left,Color right) {
-
+        int count=0;
+        for(int i=0;i<6;i++){
+            Colors[count++] = up.toVec3();
+        }
+        for(int i=0;i<6;i++){
+            Colors[count++] = down.toVec3();
+        }
+        for(int i=0;i<6;i++){
+            Colors[count++] = front.toVec3();
+        }
+        for(int i=0;i<6;i++){
+            Colors[count++] = back.toVec3();
+        }
+        for(int i=0;i<6;i++){
+            Colors[count++] = left.toVec3();
+        }
+        for(int i=0;i<6;i++){
+            Colors[count++] = right.toVec3();
+        }
     }
 
     void attributePointer() {
@@ -433,6 +463,8 @@ namespace Render {
                         if (X_1) {
                             mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardXAxis);
                             allCubesState[i] = thisTime * allCubesState[i];
+//                            mat4 transyaxis = rotate(mat4(1.0f),radians(-targetAngle),standardXAxis);
+//                            yaxis[i] = vec3(transyaxis * vec4(yaxis[i],1.0f));
                         }
                     } else if (rotateFlag == ROTATE_X_2) {
                         if (X_2) {
@@ -520,6 +552,14 @@ namespace Render {
 
         lastX = xCoordinate;
         lastY = yCoordinate;
+        if(xOffset == 0 && yOffset ==0) zeroMouseMovementCount++;
+        if(zeroMouseMovementCount == 150) {
+            delete(camera);
+            camera = new Camera(CAMERA_POSITION);
+            XAxis = -normalize(cross(vec3(CAMERA_POSITION),YAxis));
+            currentModel = mat4(1.0f);
+            zeroMouseMovementCount = 0;
+        }
 
         camera->processMouseMovement(xOffset, yOffset);
     }
@@ -588,5 +628,47 @@ namespace Render {
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Z_3;
         targetAngle = degrees;
+    }
+
+    void renderText(Shader* &s, string text, GLfloat x, GLfloat y, GLfloat scale, vec3 color)
+    {
+        // 激活对应的渲染状态
+        s->use();
+        glUniform3f(glGetUniformLocation(s->getProgramId(), "textColor"), color.x, color.y, color.z);
+        glActiveTexture(GL_TEXTURE0);
+        glBindVertexArray(textVAO);
+
+        // 遍历文本中所有的字符
+        string::const_iterator c;
+        for (c = text.begin(); c != text.end(); c++)
+        {
+            Character ch = Characters[*c];
+
+            GLfloat xpos = x + ch.Bearing.x * scale;
+            GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+            GLfloat w = ch.Size.x * scale;
+            GLfloat h = ch.Size.y * scale;
+            // 对每个字符更新VBO
+            GLfloat vertices[6][4] = {
+                    { xpos,     ypos + h,   0.0, 0.0 },
+                    { xpos,     ypos,       0.0, 1.0 },
+                    { xpos + w, ypos,       1.0, 1.0 },
+
+                    { xpos,     ypos + h,   0.0, 0.0 },
+                    { xpos + w, ypos,       1.0, 1.0 },
+                    { xpos + w, ypos + h,   1.0, 0.0 }
+            };
+            // 在四边形上绘制字形纹理
+            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            // 更新VBO内存的内容
+            glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            x += (ch.Advance >> 6) * scale; // 位偏移6个单位来获取单位为像素的值 (2^6 = 64)
+        }
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 }

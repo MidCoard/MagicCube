@@ -106,14 +106,16 @@ vec3 normalVector[NUM_VERTICES]={
         standardZAxis
 };
 
-Color Colors[36] = {
-        red, red, red, red, red, red,
-        orange, orange, orange, orange, orange, orange,
-        white, white, white, white, white, white,
-        yellow, yellow, yellow, yellow, yellow, yellow,
-        blue, blue, blue, blue, blue, blue,
-        green, green, green, green, green, green,
+Color logicColors[6] = {
+        RED,
+        ORANGE,
+        WHITE,
+        YELLOW,
+        BLUE,
+        GREEN
 };
+
+vec3 Colors[NUM_VERTICES];
 
 vec3 cubeCentralVertices[NUM_CUBES];
 

@@ -12,9 +12,9 @@ uniform vec3 viewPos;
 
 void main()
 {
-    float ambientStrength = 0.3f;
-    float diffuseStrength = 0.8f;
-    float specularStrength = 0.5f;  //光源参数
+    float ambientStrength = 0.5f;
+    float diffuseStrength = 0.5f;
+    float specularStrength = 0.5f;  //光源参数,可调整材质
 
     vec3 ambient = ambientStrength * lightColor;
 
@@ -24,7 +24,7 @@ void main()
 
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 128);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
     vec3 specular = specularStrength * spec * lightColor;
 
     vec3 result = (ambient + diffuse + specular) * Color.xyz;
