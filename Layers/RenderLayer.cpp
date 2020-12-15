@@ -5,7 +5,6 @@
 #include "Shader.h"
 #include "GLWindows.h"
 #include "Camera.h"
-#include "MagicCube.h"
 #include "SetVertices.h"
 #include "Text.h"
 #include "RenderLayer.h"
@@ -59,6 +58,10 @@ enum ROTATE_FLAG {
 bool StartGameLoop = false;
 bool ifPause = false;
 bool ifHelp = false;
+
+bool isStartGameLoop() {
+    return StartGameLoop;
+}
 
 namespace Render {
 
@@ -123,6 +126,7 @@ namespace Render {
     mat4 getCubeState(int x,int y,int z) {
         return allCubesState[x * 9 + y * 3 + z];
     }
+
 
     void initRenderLayer() {
         if (initialize)
@@ -263,6 +267,10 @@ namespace Render {
     }
 
     bool ignoreKeyboardInput = false;
+
+    bool isIgnoreKeyboardInput() {
+        return ignoreKeyboardInput;
+    }
 
     void GameLoop(double elapsed) {
         lightPosition = camera->Position;

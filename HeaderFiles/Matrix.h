@@ -1,113 +1,72 @@
-#include <iostream>
+//
+// Created by 周蜀杰 on 2020/12/16.
+//
 
-#define ERRORCODE 1
-#define EXITCODE 0
+#ifndef TEST_MATRIX_H
+#define TEST_MATRIX_H
 
-using namespace std;
+#include "glm/glm.hpp"
 
-class Matrix{
+using namespace glm;
+
+class IntRow {
 private:
-    int Row;
-    int Column;
-    float **mat;
-public:
-    Matrix();
-    Matrix(int,int);
-    ~Matrix();
-    void resetMatrix(int, int);
-    void clear();
+    int values[100];
 
-    int getRow() const;
-    int getColumn() const;
-    float** getAddress();
-    float getUnit(int,int);
-    void setUnit(int,int,float);
-    void print();
+    int n;
+
+    void init();
+
+public:
+    IntRow(int);
+    IntRow(int*,int);
+
+    int get(int);
+
+    int operator[](int pos) {
+        return get(pos);
+    }
+
+    void init(float*,int);
+
+    void init(int*,int);
+
+    void set(int,int);
 };
 
-Matrix::Matrix(){
-    Row=Column=0;
-    *mat = nullptr;
-    mat = nullptr;
-}
-Matrix::Matrix(int row,int column){
-    Row=row,Column=column;
-    mat=new float*[Row];
-    for(int i=0;i<Row;i++){
-        mat[i]=new float[Column];
-    }
+IntRow directions[] = {IntRow(new int[]{0,1,0},3),IntRow(new int[]{0,-1,0},3),IntRow(new int[]{0,0,-1},3),IntRow(new int []{0,0,1},3),IntRow(new int[]{-1,0,0},3),IntRow(new int[]{1,0,0},3)};
 
-    if(mat==nullptr){
-        cout<<"insufficient memory";
-        exit(ERRORCODE);
-    }
+class Matrix {
+private:
+    int n,m;
 
-    for(int i=0;i<Row;i++){
-        for(int j=0;j<Column;j++){
-            if(Row==Column&&i==j){
-                mat[i][j]=1;
-            }else mat[i][j]=0;
-        }
-    }
-}
-void Matrix::resetMatrix(int row, int column){
-    for(int i=0;i<Row;i++){
-        delete []mat[i];
-    }
-    delete []mat;
-	Row=row,Column=column;
-    mat=new float*[Row];
-    for(int i=0;i<Row;i++){
-        mat[i]=new float[Column];
-    }
+    float values[100][100];
 
-    for(int i=0;i<Row;i++) {
-        for (int j = 0; j < Column; j++) {
-            if (Row == Column && i == j) {
-                mat[i][j] = 1;
-            } else mat[i][j] = 0.0;
-        }
-    }
+    void init();
 
-    if(mat==nullptr){
-        cout<<"insufficient memory";
-        exit(ERRORCODE);
+public:
+
+    Matrix(int,int);
+
+    Matrix(mat4);
+
+    Matrix const operator * (Matrix matrix);
+
+    void init(float*,int);
+
+    float get(int,int);
+
+    int getAsInt(int,int);
+
+    void set(int,int,float);
+
+    IntRow getIntRow(int);
+
+    IntRow operator[](int pos) {
+        return getIntRow(pos);
     }
-}
-Matrix::~Matrix(){
-	for(int i=0;i<Row;i++){
-    	delete []mat[i];
-	}
-	delete []mat;
-}
-void Matrix::clear(){
-    for(int i=0;i<Row;i++) {
-        for (int j = 0; j < Column; j++) {
-            mat[i][j] = 0.0;
-        }
-    }
-}
-int Matrix::getRow() const{
-    return Row;
-}
-int Matrix::getColumn() const{
-    return Column;
-}
-float** Matrix::getAddress(){
-	return mat;
-}
-float Matrix::getUnit(int Row,int Column){
-    return mat[Row][Column];
-}
-void Matrix::setUnit(int Row,int Column,float data){
-    mat[Row][Column]=data;
-}
-void Matrix::print(){
-    for(int i=0;i<Row;i++){
-        for(int j=0;j<Column;j++){
-            printf("%7.1f",mat[i][j]);
-        }
-        cout<<endl;
-    }
-    cout<<endl;
-}
+};
+
+
+
+#endif //TEST_MATRIX_H

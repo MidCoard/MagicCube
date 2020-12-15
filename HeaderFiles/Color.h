@@ -1,6 +1,9 @@
 #ifndef MAGICCUBE_COLOR_H
 #define MAGICCUBE_COLOR_H
 
+#include "glm/glm.hpp"
+
+using namespace glm;
 
 class Color {
 private:
@@ -21,6 +24,12 @@ public:
     }
 
 public:
+    Color(vec3 vec) {
+        this->r = vec.x * 255;
+        this->g = vec.y * 255;
+        this->b = vec.z * 255;
+    }
+
     Color(short r,short g,short b) {
         this->r = r;
         this->g = g;
