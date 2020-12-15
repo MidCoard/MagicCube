@@ -19,7 +19,6 @@
 #define OFFSET_NULL nullptr
 #define NO_JUMP 0
 #define OFFSET(steps) (void*)steps  //使代码可读性增强
-#define DEBUG
 
 using namespace std;
 using namespace glm;
@@ -57,6 +56,10 @@ enum ROTATE_FLAG {
 #define Z_2 z > -0.01f && z < 0.01f
 #define Z_3 z > -(2*CUBE_LENGTH+GAP)-0.01f && z < -(2*CUBE_LENGTH+GAP)+0.01f //规定每层的坐标，这里取一个小区间避免定位失败
 
+bool StartGameLoop = false;
+bool ifPause = false;
+bool ifHelp = false;
+
 namespace Render {
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -75,11 +78,13 @@ namespace Render {
 
     Camera *camera;
 
+    void StartMenu();
+
     void attribPointer();
 
     void setCubeMatrix();
 
-    void render(double);
+    void GameLoop(double);
 
     void clear();
 
@@ -124,40 +129,72 @@ namespace Render {
             return;
 
         mainWindow = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
-//        cubeShader = new Shader("Shaders/MagicCube.vs", "Shaders/MagicCube.fs");
-//        lightShader = new Shader("Shaders/Light.vs", "Shaders/Light.fs");
-//        camera = new Camera(CAMERA_POSITION);
+        cubeShader = new Shader("Shaders/MagicCube.vs", "Shaders/MagicCube.fs");
+        lightShader = new Shader("Shaders/Light.vs", "Shaders/Light.fs");
+        camera = new Camera(CAMERA_POSITION);
 
         projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
         view = camera->getViewMatrix();
 
-//        setWorldSpace();
-//        setColors(logicColors[0],logicColors[1],logicColors[2],logicColors[3],logicColors[4],logicColors[5]);
+        setWorldSpace();
+        setColors(logicColors[0],logicColors[1],logicColors[2],logicColors[3],logicColors[4],logicColors[5]);
 
         glfwSetFramebufferSizeCallback(mainWindow->getWindow(), frameBufferSizeCallback);
         glfwSetCursorPosCallback(mainWindow->getWindow(), mouseCallback);
         glfwSetScrollCallback(mainWindow->getWindow(), scrollCallback);
 
-//        initText();
+        initText();
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_ALPHA_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        glGenVertexArrays(1, &MagicCubeVAO);
 
+        glGenVertexArrays(1, &lightVAO);
+        glGenBuffers(1,&lightVBO);
 
-//        glGenVertexArrays(1, &MagicCubeVAO);
-//
-//        glGenVertexArrays(1, &lightVAO);
-//        glGenBuffers(1,&lightVBO);
-//
-//        attribPointer();
-//
-//        lightModel = translate(lightModel, lightPosition);
-//        lightModel = scale(lightModel, vec3(0.2f));
-//
+        attribPointer();
+
+        lightModel = translate(lightModel, lightPosition);
+        lightModel = scale(lightModel, vec3(0.2f));
+
         initialize = true;
+    }
+
+    void StartMenu(){
+        projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        view = lookAt(vec3(0.0f,0.0f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+        glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        float alpha = abs(sin(glfwGetTime()));
+        renderText(vec3(0,2,0),1.1f,1.1f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Title.png");
+        renderText(vec3(0,0.2,0),0.93f,0.93f,alpha,view,projection,(char*)"C:/Users/Ken/DeskTop/Start.png");
+        renderText(vec3(0,-2,0),0.6f,0.6f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Help.png");
+        glfwSwapBuffers(mainWindow->getWindow());
+        glfwPollEvents();
+    };
+
+    void Pause(){
+        projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        view = lookAt(vec3(0.0f,0.5f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+        glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderText(vec3(0,0.5,0),1.0f,1.0f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Pause.png");
+        renderText(vec3(0,-1,0),0.8f,0.8f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Help.png");
+        glfwSwapBuffers(mainWindow->getWindow());
+        glfwPollEvents();
+    }
+
+    void Help(){
+        projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        view = lookAt(vec3(0.0f,0.5f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+        glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderText(vec3(0,-1,0),1.4f,4.2f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/HelpContent.png");
+        glfwSwapBuffers(mainWindow->getWindow());
+        glfwPollEvents();
     }
 
     void attribPointer() {
@@ -227,7 +264,7 @@ namespace Render {
 
     bool ignoreKeyboardInput = false;
 
-    void render(double elapsed) {
+    void GameLoop(double elapsed) {
         lightPosition = camera->Position;
         projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
         view = camera->getViewMatrix();
@@ -235,268 +272,265 @@ namespace Render {
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//        renderText(vec3(0,0,0),1.0f,mat4(1.0f),mat4(1.0f),(char*)"C:/Users/Ken/DeskTop/rendertext.png");
-
-
 //        lightShader->use();
 //        setLightMatrix();
 //        glBindVertexArray(lightVAO);
 //        glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_TRIANGLES);//绘制光源
 
-//        cubeShader->use();
-//        setCubeMatrix();
-//        glBindVertexArray(MagicCubeVAO);
-//        mat4 model = mat4(1.0f);
-//        switch (cubeState) {
-//            case STOP: {
-//                for (int i = 0; i < NUM_CUBES; i++) {
-//                    mat4 templeCurrentModel = currentModel;
-//                    templeCurrentModel *= allCubesState[i];
-//                    model = translate(templeCurrentModel, cubePositions[i]);
-//                    cubeShader->setMat4("model", model);
-//                    setCubeMatrix();
-//                    glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_VERTICES);
-//                }
-//                if (rotateFlag == ROTATE_X_1 || rotateFlag == ROTATE_X_2 || rotateFlag == ROTATE_X_3) {
-//                    cubeState = ROTATE_X;
-//                    angle = 0.0;
-//                    rotationVector = standardXAxis;
-//                } else if (rotateFlag == ROTATE_Y_1 || rotateFlag == ROTATE_Y_2 || rotateFlag == ROTATE_Y_3) {
-//                    cubeState = ROTATE_Y;
-//                    angle = 0.0;
-//                    rotationVector = standardYAxis;
-//                } else if (rotateFlag == ROTATE_Z_1 || rotateFlag == ROTATE_Z_2 || rotateFlag == ROTATE_Z_3) {
-//                    cubeState = ROTATE_Z;
-//                    angle = 0.0;
-//                    rotationVector = standardZAxis;
-//                }
-//                break;
-//            }
-//            case ROTATE_X: {
-//                angle += rotateVelocity * elapsed * targetAngle;
-//                for (int i = 0; i < NUM_CUBES; i++) {
-//                    mat3 allMatsM3 = allCubesState[i];
-//                    vec3 newCube = allMatsM3 * cubePositions[i];
-//                    float &x = newCube.x;
-//                    if (rotateFlag == ROTATE_X_1) {
-//                        if (X_1) {
-//                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        } else {
-//                            mat4 templeCurrentModel = currentModel;
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        }
-//                    } else if (rotateFlag == ROTATE_X_2) {
-//                        if (X_2) {
-//                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        } else {
-//                            mat4 templeCurrentModel = currentModel;
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        }
-//                    } else if (rotateFlag == ROTATE_X_3) {
-//                        if (X_3) {
-//                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        } else {
-//                            mat4 templeCurrentModel = currentModel;
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        }
-//                    }
-//                    cubeShader->setMat4("model", model);
-//                    glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_VERTICES);
-//
-//                }
-//                if ((targetAngle > 0 && angle >= targetAngle) || (targetAngle < 0 && angle <= targetAngle)) {
-//                    cubeState = UPDATE;
-//                } else {
-//                    ignoreKeyboardInput = true;
-//                }
-//                break;
-//            }
-//            case ROTATE_Y: {
-//                angle += rotateVelocity * elapsed * targetAngle;
-//                for (int i = 0; i < NUM_CUBES; i++) {
-//                    mat3 allMatsM3 = allCubesState[i];
-//                    vec3 newCube = allMatsM3 * cubePositions[i];
-//                    float &y = newCube.y;
-//                    if (rotateFlag == ROTATE_Y_1) {
-//                        if (Y_1) {
-//                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        } else {
-//                            mat4 templeCurrentModel = currentModel;
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        }
-//                    } else if (rotateFlag == ROTATE_Y_2) {
-//                        if (Y_2) {
-//                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        } else {
-//                            mat4 templeCurrentModel = currentModel;
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        }
-//                    } else if (rotateFlag == ROTATE_Y_3) {
-//                        if (Y_3) {
-//                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        } else {
-//                            mat4 templeCurrentModel = currentModel;
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        }
-//                    }
-//                    cubeShader->setMat4("model", model);
-//                    glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_VERTICES);
-//                }
-//                if ((targetAngle > 0 && angle >= targetAngle) || (targetAngle < 0 && angle <= targetAngle)) {
-//                    cubeState = UPDATE;
-//                } else {
-//                    ignoreKeyboardInput = true;
-//                }
-//                break;
-//            }
-//            case ROTATE_Z: {
-//                angle += rotateVelocity * elapsed * targetAngle;
-//                for (int i = 0; i < NUM_CUBES; i++) {
-//                    mat3 allMatsM3 = allCubesState[i];
-//                    vec3 newCube = allMatsM3 * cubePositions[i];
-//                    float &z = newCube.z;
-//                    if (rotateFlag == ROTATE_Z_1) {
-//                        if (Z_1) {
-//                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        } else {
-//                            mat4 templeCurrentModel = currentModel;
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        }
-//                    } else if (rotateFlag == ROTATE_Z_2) {
-//                        if (Z_2) {
-//                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        } else {
-//                            mat4 templeCurrentModel = currentModel;
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        }
-//                    } else if (rotateFlag == ROTATE_Z_3) {
-//                        if (Z_3) {
-//                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        } else {
-//                            mat4 templeCurrentModel = currentModel;
-//                            templeCurrentModel *= allCubesState[i];
-//                            model = translate(templeCurrentModel, cubePositions[i]);
-//                        }
-//                    }
-//                    cubeShader->setMat4("model", model);
-//                    glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_VERTICES);
-//                }
-//                if ((targetAngle > 0 && angle >= targetAngle) || (targetAngle < 0 && angle <= targetAngle)) {
-//                    cubeState = UPDATE;
-//                } else {
-//                    ignoreKeyboardInput = true;
-//                }
-//                break;
-//            }
-//            case UPDATE: {
-//                unique_lock<mutex> lock(cubeMutex);
-//                ignoreKeyboardInput = false;
-//                for (int i = 0; i < NUM_CUBES; i++) {
-//                    mat3 allMatsM3 = allCubesState[i];
-//                    vec3 newCube = allMatsM3 * cubePositions[i];
-//                    float &x = newCube.x;
-//                    float &y = newCube.y;
-//                    float &z = newCube.z;
-//                    if (rotateFlag == ROTATE_X_1) {
-//                        if (X_1) {
-//                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardXAxis);
-//                            allCubesState[i] = thisTime * allCubesState[i];
-////                            mat4 transyaxis = rotate(mat4(1.0f),radians(-targetAngle),standardXAxis);
-////                            yaxis[i] = vec3(transyaxis * vec4(yaxis[i],1.0f));
-//                        }
-//                    } else if (rotateFlag == ROTATE_X_2) {
-//                        if (X_2) {
-//                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardXAxis);
-//                            allCubesState[i] = thisTime * allCubesState[i];
-//                        }
-//                    } else if (rotateFlag == ROTATE_X_3) {
-//                        if (X_3) {
-//                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardXAxis);
-//                            allCubesState[i] = thisTime * allCubesState[i];
-//                        }
-//                    } else if (rotateFlag == ROTATE_Y_1) {
-//                        if (Y_1) {
-//                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardYAxis);
-//                            allCubesState[i] = thisTime * allCubesState[i];
-//                        }
-//                    } else if (rotateFlag == ROTATE_Y_2) {
-//                        if (Y_2) {
-//                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardYAxis);
-//                            allCubesState[i] = thisTime * allCubesState[i];
-//                        }
-//                    } else if (rotateFlag == ROTATE_Y_3) {
-//                        if (Y_3) {
-//                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardYAxis);
-//                            allCubesState[i] = thisTime * allCubesState[i];
-//                        }
-//                    } else if (rotateFlag == ROTATE_Z_1) {
-//                        if (Z_1) {
-//                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardZAxis);
-//                            allCubesState[i] = thisTime * allCubesState[i];
-//                        }
-//                    } else if (rotateFlag == ROTATE_Z_2) {
-//                        if (Z_2) {
-//                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardZAxis);
-//                            allCubesState[i] = thisTime * allCubesState[i];
-//                        }
-//                    } else if (rotateFlag == ROTATE_Z_3) {
-//                        if (Z_3) {
-//                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardZAxis);
-//                            allCubesState[i] = thisTime * allCubesState[i];
-//                        }
-//                    }
-//                }
-//                lock.unlock();
-//                for (int i = 0; i < NUM_CUBES; i++) {
-//                    mat4 templeCurrentModel = currentModel;
-//                    templeCurrentModel *= allCubesState[i];
-//                    model = translate(templeCurrentModel, cubePositions[i]);
-//                    cubeShader->setMat4("model", model);
-//                    glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_VERTICES);
-//                }
-//                cubeState = STOP;
-//                targetAngle = 0;
-//                rotateFlag = NO_ROTATE;
-//#ifdef DEBUG
-//                system("cls");
-//                for (int i = 0;i<27;i++) {
-//                    for (int j = 0; j < 4; j++) {
-//                        for (int k = 0; k < 4; k++)
-//                            printf("%d ",(int)round(allCubesState[i][j][k]));
-//                        cout<<endl;
-//                    }
-//                    cout<< "%%%%%%%%%"<<endl;
-//                }
-//#endif
-//                break;
-//            }
-//        }
+        cubeShader->use();
+        setCubeMatrix();
+        glBindVertexArray(MagicCubeVAO);
+        mat4 model = mat4(1.0f);
+        switch (cubeState) {
+            case STOP: {
+                for (int i = 0; i < NUM_CUBES; i++) {
+                    mat4 templeCurrentModel = currentModel;
+                    templeCurrentModel *= allCubesState[i];
+                    model = translate(templeCurrentModel, cubePositions[i]);
+                    cubeShader->setMat4("model", model);
+                    setCubeMatrix();
+                    glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_VERTICES);
+                }
+                if (rotateFlag == ROTATE_X_1 || rotateFlag == ROTATE_X_2 || rotateFlag == ROTATE_X_3) {
+                    cubeState = ROTATE_X;
+                    angle = 0.0;
+                    rotationVector = standardXAxis;
+                } else if (rotateFlag == ROTATE_Y_1 || rotateFlag == ROTATE_Y_2 || rotateFlag == ROTATE_Y_3) {
+                    cubeState = ROTATE_Y;
+                    angle = 0.0;
+                    rotationVector = standardYAxis;
+                } else if (rotateFlag == ROTATE_Z_1 || rotateFlag == ROTATE_Z_2 || rotateFlag == ROTATE_Z_3) {
+                    cubeState = ROTATE_Z;
+                    angle = 0.0;
+                    rotationVector = standardZAxis;
+                }
+                break;
+            }
+            case ROTATE_X: {
+                angle += rotateVelocity * elapsed * targetAngle;
+                for (int i = 0; i < NUM_CUBES; i++) {
+                    mat3 allMatsM3 = allCubesState[i];
+                    vec3 newCube = allMatsM3 * cubePositions[i];
+                    float &x = newCube.x;
+                    if (rotateFlag == ROTATE_X_1) {
+                        if (X_1) {
+                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        } else {
+                            mat4 templeCurrentModel = currentModel;
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        }
+                    } else if (rotateFlag == ROTATE_X_2) {
+                        if (X_2) {
+                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        } else {
+                            mat4 templeCurrentModel = currentModel;
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        }
+                    } else if (rotateFlag == ROTATE_X_3) {
+                        if (X_3) {
+                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        } else {
+                            mat4 templeCurrentModel = currentModel;
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        }
+                    }
+                    cubeShader->setMat4("model", model);
+                    glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_VERTICES);
+
+                }
+                if ((targetAngle > 0 && angle >= targetAngle) || (targetAngle < 0 && angle <= targetAngle)) {
+                    cubeState = UPDATE;
+                } else {
+                    ignoreKeyboardInput = true;
+                }
+                break;
+            }
+            case ROTATE_Y: {
+                angle += rotateVelocity * elapsed * targetAngle;
+                for (int i = 0; i < NUM_CUBES; i++) {
+                    mat3 allMatsM3 = allCubesState[i];
+                    vec3 newCube = allMatsM3 * cubePositions[i];
+                    float &y = newCube.y;
+                    if (rotateFlag == ROTATE_Y_1) {
+                        if (Y_1) {
+                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        } else {
+                            mat4 templeCurrentModel = currentModel;
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        }
+                    } else if (rotateFlag == ROTATE_Y_2) {
+                        if (Y_2) {
+                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        } else {
+                            mat4 templeCurrentModel = currentModel;
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        }
+                    } else if (rotateFlag == ROTATE_Y_3) {
+                        if (Y_3) {
+                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        } else {
+                            mat4 templeCurrentModel = currentModel;
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        }
+                    }
+                    cubeShader->setMat4("model", model);
+                    glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_VERTICES);
+                }
+                if ((targetAngle > 0 && angle >= targetAngle) || (targetAngle < 0 && angle <= targetAngle)) {
+                    cubeState = UPDATE;
+                } else {
+                    ignoreKeyboardInput = true;
+                }
+                break;
+            }
+            case ROTATE_Z: {
+                angle += rotateVelocity * elapsed * targetAngle;
+                for (int i = 0; i < NUM_CUBES; i++) {
+                    mat3 allMatsM3 = allCubesState[i];
+                    vec3 newCube = allMatsM3 * cubePositions[i];
+                    float &z = newCube.z;
+                    if (rotateFlag == ROTATE_Z_1) {
+                        if (Z_1) {
+                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        } else {
+                            mat4 templeCurrentModel = currentModel;
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        }
+                    } else if (rotateFlag == ROTATE_Z_2) {
+                        if (Z_2) {
+                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        } else {
+                            mat4 templeCurrentModel = currentModel;
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        }
+                    } else if (rotateFlag == ROTATE_Z_3) {
+                        if (Z_3) {
+                            mat4 templeCurrentModel = rotate(currentModel, radians(angle), rotationVector);
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        } else {
+                            mat4 templeCurrentModel = currentModel;
+                            templeCurrentModel *= allCubesState[i];
+                            model = translate(templeCurrentModel, cubePositions[i]);
+                        }
+                    }
+                    cubeShader->setMat4("model", model);
+                    glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_VERTICES);
+                }
+                if ((targetAngle > 0 && angle >= targetAngle) || (targetAngle < 0 && angle <= targetAngle)) {
+                    cubeState = UPDATE;
+                } else {
+                    ignoreKeyboardInput = true;
+                }
+                break;
+            }
+            case UPDATE: {
+                unique_lock<mutex> lock(cubeMutex);
+                ignoreKeyboardInput = false;
+                for (int i = 0; i < NUM_CUBES; i++) {
+                    mat3 allMatsM3 = allCubesState[i];
+                    vec3 newCube = allMatsM3 * cubePositions[i];
+                    float &x = newCube.x;
+                    float &y = newCube.y;
+                    float &z = newCube.z;
+                    if (rotateFlag == ROTATE_X_1) {
+                        if (X_1) {
+                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardXAxis);
+                            allCubesState[i] = thisTime * allCubesState[i];
+//                            mat4 transyaxis = rotate(mat4(1.0f),radians(-targetAngle),standardXAxis);
+//                            yaxis[i] = vec3(transyaxis * vec4(yaxis[i],1.0f));
+                        }
+                    } else if (rotateFlag == ROTATE_X_2) {
+                        if (X_2) {
+                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardXAxis);
+                            allCubesState[i] = thisTime * allCubesState[i];
+                        }
+                    } else if (rotateFlag == ROTATE_X_3) {
+                        if (X_3) {
+                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardXAxis);
+                            allCubesState[i] = thisTime * allCubesState[i];
+                        }
+                    } else if (rotateFlag == ROTATE_Y_1) {
+                        if (Y_1) {
+                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardYAxis);
+                            allCubesState[i] = thisTime * allCubesState[i];
+                        }
+                    } else if (rotateFlag == ROTATE_Y_2) {
+                        if (Y_2) {
+                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardYAxis);
+                            allCubesState[i] = thisTime * allCubesState[i];
+                        }
+                    } else if (rotateFlag == ROTATE_Y_3) {
+                        if (Y_3) {
+                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardYAxis);
+                            allCubesState[i] = thisTime * allCubesState[i];
+                        }
+                    } else if (rotateFlag == ROTATE_Z_1) {
+                        if (Z_1) {
+                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardZAxis);
+                            allCubesState[i] = thisTime * allCubesState[i];
+                        }
+                    } else if (rotateFlag == ROTATE_Z_2) {
+                        if (Z_2) {
+                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardZAxis);
+                            allCubesState[i] = thisTime * allCubesState[i];
+                        }
+                    } else if (rotateFlag == ROTATE_Z_3) {
+                        if (Z_3) {
+                            mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardZAxis);
+                            allCubesState[i] = thisTime * allCubesState[i];
+                        }
+                    }
+                }
+                lock.unlock();
+                for (int i = 0; i < NUM_CUBES; i++) {
+                    mat4 templeCurrentModel = currentModel;
+                    templeCurrentModel *= allCubesState[i];
+                    model = translate(templeCurrentModel, cubePositions[i]);
+                    cubeShader->setMat4("model", model);
+                    glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_VERTICES);
+                }
+                cubeState = STOP;
+                targetAngle = 0;
+                rotateFlag = NO_ROTATE;
+#ifdef DEBUG
+                system("cls");
+                for (int i = 0;i<27;i++) {
+                    for (int j = 0; j < 4; j++) {
+                        for (int k = 0; k < 4; k++)
+                            printf("%d ",(int)round(allCubesState[i][j][k]));
+                        cout<<endl;
+                    }
+                    cout<< "%%%%%%%%%"<<endl;
+                }
+#endif
+                break;
+            }
+        }
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     }
@@ -518,6 +552,7 @@ namespace Render {
     bool firstMouse = true;
 
     void mouseCallback(GLFWwindow *window, double xCoordinate, double yCoordinate) {
+        if(ifPause || ifHelp) return;
         if (firstMouse) {
             lastX = xCoordinate;
             lastY = yCoordinate;

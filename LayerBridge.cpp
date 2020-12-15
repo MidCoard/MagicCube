@@ -1,8 +1,15 @@
 #include "Layers/LogicLayer.cpp"
 #include "Layers/RenderLayer.cpp"
 
+int count1 = 0;
+int count2 = 0;
+int spacePressCount = 0;
+
 void render(double elapsed) {
-    Render::render(elapsed);
+    if(!StartGameLoop&&!ifHelp) Render::StartMenu();
+    if(ifPause&&!ifHelp) Render::Pause();
+    if(ifHelp&&ifPause || spacePressCount==0&&ifHelp) Render::Help();
+    if(StartGameLoop && !ifPause) Render::GameLoop(elapsed);
 }
 
 void updateGameState() {
@@ -33,7 +40,30 @@ void handleInput() {
         Render::allCubesState[i] = mat4(1.0f);
         }
     }//还原魔方至初始状态
-    if(!Render::ignoreKeyboardInput) {
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS){
+        count1++;
+        if(count1==1&&spacePressCount==0){
+            StartGameLoop = true;
+            spacePressCount++;
+        }
+        if(count1==1&&spacePressCount>1){
+            ifPause = !ifPause;
+        }
+        if(StartGameLoop) spacePressCount++;
+    }//开始游戏
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_SPACE) == GLFW_RELEASE){
+        count1 = 0;
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_H) == GLFW_PRESS && (!StartGameLoop || ifPause)){
+        count2++;
+        if(count2==1){
+            ifHelp=!ifHelp;
+        }
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_H) == GLFW_RELEASE && (!StartGameLoop || ifPause)){
+        count2=0;
+    }//帮助界面
+    if(!Render::ignoreKeyboardInput&&StartGameLoop) {
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_Q) == GLFW_PRESS) {
             Render::rotate_Y_1(-90);
         }

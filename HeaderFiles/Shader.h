@@ -26,7 +26,7 @@ public:
 
     ~Shader();
 
-    void use();
+    void use() const;
 
     void setBool(const std::string &name, bool value) const {
         glUniform1i(glGetUniformLocation(ShaderProgramID, name.c_str()), (int) value);
@@ -65,7 +65,7 @@ public:
         glUniform4fv(glGetUniformLocation(ShaderProgramID, name.c_str()), 1, &value[0]);
     }
 
-    void setVec4(const std::string &name, float x, float y, float z, float w) {
+    void setVec4(const std::string &name, float x, float y, float z, float w) const {
         glUniform4f(glGetUniformLocation(ShaderProgramID, name.c_str()), x, y, z, w);
     }
 
@@ -84,7 +84,7 @@ public:
         glUniformMatrix4fv(glGetUniformLocation(ShaderProgramID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    unsigned int getProgramId();
+    unsigned int getProgramId() const;
 };
 
 Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath) {
@@ -166,11 +166,11 @@ Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath) {
     glDeleteShader(fragment);
 }
 
-void Shader::use() {
+void Shader::use() const {
     glUseProgram(ShaderProgramID);
 }
 
-unsigned int Shader::getProgramId() {
+unsigned int Shader::getProgramId() const {
     return ShaderProgramID;
 }
 

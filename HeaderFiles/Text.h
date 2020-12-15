@@ -15,7 +15,7 @@
 using namespace glm;
 
 Shader *textShader;
-GLuint textVAO, textVBO ,textureVBO;
+GLuint textVAO, textVBO, textEBO, textureVBO;
 GLuint texture;
 
 
@@ -24,17 +24,17 @@ vec3 textVertices[] = {
         vec3(3.0f, 1.0f, 0.0f),
         vec3(3.0f, -1.0f, 0.0f),
         vec3(3.0f, -1.0f, 0.0f),
-        vec3(-3.0f, -1.0f, 0.0f),
-        vec3(-3.0f, 1.0f, 0.0f)
+        vec3(-3.0f, 1.0f, 0.0f),
+        vec3(-3.0f, -1.0f, 0.0f)
 };
 
-vec3 textureVertices[] = {
-        vec3(-3.0f, 1.0f, 0.0f),
-        vec3(3.0f, 1.0f, 0.0f),
-        vec3(3.0f, -1.0f, 0.0f),
-        vec3(3.0f, -1.0f, 0.0f),
-        vec3(-3.0f, -1.0f, 0.0f),
-        vec3(-3.0f, 1.0f, 0.0f)
+vec2 textureVertices[] = {
+        vec2(0.0f,1.0f),
+        vec2(1.0f,1.0f),
+        vec2(1.0f,0.0f),
+        vec2(1.0f,0.0f),
+        vec2(0.0f,1.0f),
+        vec2(0.0f,0.0f)
 };
 
 void initText() {
@@ -52,7 +52,7 @@ void initText() {
     glGenBuffers(1,&textureVBO);
     glBindBuffer(GL_ARRAY_BUFFER, textureVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(textureVertices), textureVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
     glEnableVertexAttribArray(1);
     glBindVertexArray(0);//链接文字信息
 
@@ -63,11 +63,11 @@ void initText() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    auto *borderColor = (float *)(WindowColor);
+    auto *borderColor = const_cast<float *>(WindowColor);
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 }
 
-void renderText(vec3 position, float scale, mat4 view, mat4 projection, char* imagePath) {
+void renderText(vec3 position, float scaleX, float scaleY, float Alpha, mat4 view, mat4 projection, char* imagePath) {
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(imagePath, &width, &height, &nrChannels, 0);
@@ -84,15 +84,18 @@ void renderText(vec3 position, float scale, mat4 view, mat4 projection, char* im
     stbi_image_free(data);
     mat4 model = mat4(1.0f);
     model = translate(model, position);
-    model = glm::scale(model,vec3(scale));
+    model = glm::scale(model,vec3(scaleX,scaleY,1.0f));
+//    model = rotate(model,radians())
 
     textShader->setMat4("model",model);
     textShader->setMat4("view", view);
     textShader->setMat4("projection", projection);
+    textShader->setFloat("Alpha",Alpha);
 
     textShader->use();
     glBindVertexArray(textVAO);
     glDrawArrays(GL_TRIANGLES,0,6);
+    glBindVertexArray(0);
 }
 
 #endif
