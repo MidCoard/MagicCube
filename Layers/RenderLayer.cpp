@@ -8,6 +8,7 @@
 #include "MagicCube.h"
 #include "SetVertices.h"
 #include "Text.h"
+#include "RenderLayer.h"
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1080
@@ -113,6 +114,11 @@ namespace Render {
     vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    mat4 getCubeState(int x,int y,int z) {
+        return allCubesState[x * 9 + y * 3 + z];
+    }
+
     void initRenderLayer() {
         if (initialize)
             return;
