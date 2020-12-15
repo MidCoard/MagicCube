@@ -1,83 +1,98 @@
 #ifndef MAGICCUBE_TEXT_H
 #define MAGICCUBE_TEXT_H
 
-#include <map>
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include <cstring>
+#include <iostream>
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <stb_image.h>
 
 #include "Shader.h"
 
-
-using namespace std;
 using namespace glm;
 
-struct Character {
-    GLuint     TextureID;  // 字形纹理的ID
-    ivec2 Size;       // 字形大小
-    ivec2 Bearing;    // 从基准线到字形左部/顶部的偏移值
-    GLuint     Advance;    // 原点距下一个字形原点的距离
+Shader *textShader;
+GLuint textVAO, textVBO ,textureVBO;
+GLuint texture;
+
+
+vec3 textVertices[] = {
+        vec3(-3.0f, 1.0f, 0.0f),
+        vec3(3.0f, 1.0f, 0.0f),
+        vec3(3.0f, -1.0f, 0.0f),
+        vec3(3.0f, -1.0f, 0.0f),
+        vec3(-3.0f, -1.0f, 0.0f),
+        vec3(-3.0f, 1.0f, 0.0f)
 };
 
-map<GLchar, Character> Characters;
+vec3 textureVertices[] = {
+        vec3(-3.0f, 1.0f, 0.0f),
+        vec3(3.0f, 1.0f, 0.0f),
+        vec3(3.0f, -1.0f, 0.0f),
+        vec3(3.0f, -1.0f, 0.0f),
+        vec3(-3.0f, -1.0f, 0.0f),
+        vec3(-3.0f, 1.0f, 0.0f)
+};
 
+void initText() {
+    textShader = new Shader("Shaders/Text.vs", "Shaders/Text.fs");
 
-void loadText() {
-    FT_Library ft;
-    // All functions return a value different than 0 whenever an error occurred
-    if (FT_Init_FreeType(&ft))
-        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+    glGenVertexArrays(1, &textVAO);
+    glBindVertexArray(textVAO);
 
-    // Load font as face
-    FT_Face face;
-    if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
-        std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+    glGenBuffers(1, &textVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(textVertices), textVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glEnableVertexAttribArray(0);
 
-    // Set size to load glyphs as
-    FT_Set_Pixel_Sizes(face, 0, 48);
+    glGenBuffers(1,&textureVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, textureVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(textureVertices), textureVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(0);//链接文字信息
 
-    // Disable byte-alignment restriction
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // Load first 128 characters of ASCII set
-    for (GLubyte c = 0; c < 128; c++) {
-        // Load character glyph
-        if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-            std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-            continue;
-        }
-        // Generate texture
-        GLuint texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(
-                GL_TEXTURE_2D,
-                0,
-                GL_RED,
-                face->glyph->bitmap.width,
-                face->glyph->bitmap.rows,
-                0,
-                GL_RED,
-                GL_UNSIGNED_BYTE,
-                face->glyph->bitmap.buffer
-        );
-        // Set texture options
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // Now store character for later use
-        Character character = {
-                texture,
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                (unsigned int )face->glyph->advance.x
-        };
-        Characters.insert(std::pair<GLchar, Character>(c, character));
-    }
-    glBindTexture(GL_TEXTURE_2D, 0);
-    // Destroy FreeType once we're finished
-    FT_Done_Face(face);
-    FT_Done_FreeType(ft);
+    auto *borderColor = (float *)(WindowColor);
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 }
+
+void renderText(vec3 position, float scale, mat4 view, mat4 projection, char* imagePath) {
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char *data = stbi_load(imagePath, &width, &height, &nrChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        cout << "Failed to load texture" << endl;
+        exit(-1);
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(data);
+    mat4 model = mat4(1.0f);
+    model = translate(model, position);
+    model = glm::scale(model,vec3(scale));
+
+    textShader->setMat4("model",model);
+    textShader->setMat4("view", view);
+    textShader->setMat4("projection", projection);
+
+    textShader->use();
+    glBindVertexArray(textVAO);
+    glDrawArrays(GL_TRIANGLES,0,6);
+}
+
 #endif

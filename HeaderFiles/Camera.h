@@ -50,7 +50,7 @@ public:
         updateCameraVectors();
     }
 
-    mat4 getViewMatrix() {
+    mat4 getViewMatrix() const {
         return lookAt(Position, vec3(0, 0, 0), Up);
     }
 
@@ -59,6 +59,8 @@ public:
     void processMouseMovement(float xoffset, float yoffset) {
         xoffset *= MouseSensitivity;
         yoffset *= MouseSensitivity;
+
+        Up = cross(Front,Right);
 
         mat4 transx = mat4(1.0f);
         mat4 transy = mat4(1.0f);

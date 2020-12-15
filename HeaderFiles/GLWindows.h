@@ -9,13 +9,15 @@
 
 #define ErrorCode -1
 
+mat4 transform = mat4(1.0f);
+
 enum WindowColor{
     R,
     G,
     B,
     A
 };
-const float WindowColor[4]={0.1f,0.2f,0.3f,1.0f};
+const float WindowColor[4]={0.2f,0.4f,0.6f,1.0f};
 
 using namespace std;
 
@@ -65,8 +67,12 @@ GLFWwindow* GLWindow::getWindow(){
 GLWindow::~GLWindow() {
     glfwDestroyWindow(window);
 }
+
 void frameBufferSizeCallback(GLFWwindow* window, int width, int height){
     glViewport(0, 0, width, height);
+    transform = mat4(1.0f);
+    if(height>width) transform = scale(transform,vec3((float)width/(float)height,1.0f,(float)width/(float)height));
+    else transform = scale(transform,vec3((float)height/(float)width,1.0f,(float)height/(float)width));
 }
 
 #endif

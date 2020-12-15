@@ -8,8 +8,6 @@ void render(double elapsed) {
 void updateGameState() {
     Logic::updateGameState();
 }
-int count1=0;
-int count2=0;
 void handleInput() {
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(Render::getWindow()->getWindow(), true);
@@ -91,26 +89,4 @@ void handleInput() {
             Render::rotate_Z_3(-90);
         }
     }
-//    if(glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-//        count1++;
-//        if(count1==1) {
-//            for (int i = 0; i < NUM_CUBES; i++) {
-//                Render::allCubesState[i] = rotate(Render::allCubesState[i], radians(90.0f), Render::yaxis[i]);
-//            }
-//        }
-//    }
-//    if(glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-//        count2++;
-//        if(count2==1) {
-//            for (int i = 0; i < NUM_CUBES; i++) {
-//                Render::allCubesState[i] = rotate(Render::allCubesState[i], radians(-90.0f), standardYAxis);
-//            }
-//        }
-//    }
-//    if(glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_RIGHT) == GLFW_RELEASE){
-//        count1=0;
-//    }
-//    if(glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_LEFT) == GLFW_RELEASE){
-//        count2=0;
-//    }
 }

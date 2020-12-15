@@ -140,84 +140,26 @@ void setWorldSpace() {
     }
 }
 
-enum cubeFace {
-    NONE,
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-    BACK,
-    FRONT
-};
-int colors[] = {
-        //down,up,left,right,back,front
-        DOWN, NONE, LEFT, NONE, BACK, NONE,
-        DOWN, NONE, NONE, NONE, BACK, NONE,
-        DOWN, NONE, NONE, RIGHT, BACK, NONE,
-        DOWN, NONE, LEFT, NONE, NONE, NONE,
-        DOWN, NONE, NONE, NONE, NONE, NONE,
-        DOWN, NONE, NONE, RIGHT, NONE, NONE,
-        DOWN, NONE, LEFT, NONE, NONE, FRONT,
-        DOWN, NONE, NONE, NONE, NONE, FRONT,
-        DOWN, NONE, NONE, RIGHT, NONE, FRONT,
-        NONE, NONE, LEFT, NONE, BACK, NONE,
-        NONE, NONE, NONE, NONE, BACK, NONE,
-        NONE, NONE, NONE, RIGHT, BACK, NONE,
-        NONE, NONE, LEFT, NONE, NONE, NONE,
-        NONE, NONE, NONE, NONE, NONE, NONE,
-        NONE, NONE, NONE, RIGHT, NONE, NONE,
-        NONE, NONE, LEFT, NONE, NONE, FRONT,
-        NONE, NONE, NONE, NONE, NONE, FRONT,
-        NONE, NONE, NONE, RIGHT, NONE, FRONT,
-        NONE, UP, LEFT, NONE, BACK, NONE,
-        NONE, UP, NONE, NONE, BACK, NONE,
-        NONE, UP, NONE, RIGHT, BACK, NONE,
-        NONE, UP, LEFT, NONE, NONE, NONE,
-        NONE, UP, NONE, NONE, NONE, NONE,
-        NONE, UP, NONE, RIGHT, NONE, NONE,
-        NONE, UP, LEFT, NONE, NONE, FRONT,
-        NONE, UP, NONE, NONE, NONE, FRONT,
-        NONE, UP, NONE, RIGHT, NONE, FRONT,
-};
-
-//vec3 magicCubeColors[NUM_CUBES][NUM_VERTICES];
-//
-//void setColor() {
-//    int counter = 0;
-//    int counter1 = 0;
-//    int colorCounter = 0;
-//    while (counter < NUM_CUBES * 6) {
-//        for (int i = 0; i < 6; i++) {
-//            switch (colors[counter]) {
-//                case RIGHT:
-//                    magicCubeColors[colorCounter][counter1++] = red;
-//                    break;
-//                case DOWN:
-//                    magicCubeColors[colorCounter][counter1++] = white;
-//                    break;
-//                case FRONT:
-//                    magicCubeColors[colorCounter][counter1++] = blue;
-//                    break;
-//                case UP:
-//                    magicCubeColors[colorCounter][counter1++] = yellow;
-//                    break;
-//                case BACK:
-//                    magicCubeColors[colorCounter][counter1++] = green;
-//                    break;
-//                case LEFT:
-//                    magicCubeColors[colorCounter][counter1++] = orange;
-//                    break;
-//                case NONE:
-//                    magicCubeColors[colorCounter][counter1++] = black;
-//                    break;
-//            }
-//            if (counter1 == 36) counter1 = 0;
-//        }
-//        if ((counter + 1) / 6 == 0) colorCounter++;
-//        counter++;
-//    }
-//    cout << sizeof(magicCubeColors) << endl;
-//    cout << sizeof(magicCubeColors) / sizeof(float) << endl;
-//}
+void setColors(Color up,Color down,Color front,Color back,Color left,Color right) {
+    int count=0;
+    for(int i=0;i<6;i++){
+        Colors[count++] = up.toVec3();
+    }
+    for(int i=0;i<6;i++){
+        Colors[count++] = down.toVec3();
+    }
+    for(int i=0;i<6;i++){
+        Colors[count++] = front.toVec3();
+    }
+    for(int i=0;i<6;i++){
+        Colors[count++] = back.toVec3();
+    }
+    for(int i=0;i<6;i++){
+        Colors[count++] = left.toVec3();
+    }
+    for(int i=0;i<6;i++){
+        Colors[count++] = right.toVec3();
+    }
+}
 
 #endif
