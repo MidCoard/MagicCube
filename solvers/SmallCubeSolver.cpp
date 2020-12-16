@@ -3,7 +3,13 @@
 #include <stdio.h>		// Standard input/output
 #include <memory.h>		// memset
 #include <string.h>		// strcpy
-#include "SmallCubeSolver.h"
+#include "Solvers.h"
+
+namespace SmallCubeSolver {
+
+    char * args[21];
+
+    int ret[10000];
 
 enum Moves { U = 0, U2, U3, D, D2, D3, F, F2, F3, B, B2, B3, R, R2, R3, L, L2, L3, X, X2, X3, Y, Y2, Y3, Z, Z2, Z3};
 
@@ -579,4 +585,26 @@ char* solveSmallCubeSolver(char * argv[])
 	}
 
 	return answer;
+}
+
+    int* solve(char* str) {
+        int cnt = 1;
+        char *p;
+        const char *delim = " ";
+        p = strtok(str, delim);
+        while(p) {
+            args[cnt++] = p;
+            p = strtok(NULL, delim);
+        }
+        char* answer = solveSmallCubeSolver(args);
+        int length = strlen(answer);
+        cnt = 1;
+        for (int i = 0;i<length;i+=3) {
+            char cs = answer[i];
+            int count = answer[i+1] - '0';
+            ret[cnt++] = getAnswer(cs) + (count - 1) * 6;
+        }
+        ret[0] = cnt - 1;
+        return ret;
+    }
 }

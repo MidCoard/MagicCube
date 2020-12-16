@@ -1,12 +1,17 @@
 #include <iostream>
 #include <vector>
-#include "main.h"
+#include "Solvers.h"
 
 #define fr2s(i, x, y, s) for(int i=x; i<y; i+=s)
 #define fr2(i, x, y) fr2s(i, x, y, 1)
 #define fr(i, x) fr2(i, 0, x)
 #define frs(i, x, s) fr2s(i, 0, x, s)
 
+namespace SOLVE_main{
+
+    char * args[21];
+
+    int ret[10000];
 using namespace std;
 //                       1         2         3         4
 //             012345678901234567890123456789012345678901234567
@@ -236,4 +241,25 @@ char* solveMain( char *argv[])
 	fr2(i, 1, 21)s+=argv[i];
 	solve();
 	return answer;
+}
+    int* solve(char* str) {
+        int cnt = 1;
+        char *p;
+        const char *delim = " ";
+        p = strtok(str, delim);
+        while(p) {
+            args[cnt++] = p;
+            p = strtok(NULL, delim);
+        }
+        char* answer = solveMain(args);
+        int length = strlen(answer);
+        cnt = 1;
+        for (int i = 0;i<length;i+=3) {
+            char cs = answer[i];
+            int count = answer[i+1] - '0';
+            ret[cnt++] = getAnswer(cs) + (count - 1) * 6;
+        }
+        ret[0] = cnt - 1;
+        return ret;
+    }
 }

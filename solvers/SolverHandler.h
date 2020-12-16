@@ -6,15 +6,14 @@
 #define __SOLVERHANDLER_H
 
 
-#include "ct5.h"
-#include "cube.h"
-#include "cubecompo.h"
-#include "CUBSOLV.h"
-#include "JohnnyX.h"
-#include "main.h"
-#include "rubik.h"
-#include "SmallCubeSolver.h"
-#include "solver.h"
+#include "ct5.cpp"
+#include "cube.cpp"
+#include "cubecompo.cpp"
+#include "CUBSOLV.cpp"
+#include "JohnnyX.cpp"
+#include "main.cpp"
+#include "SmallCubeSolver.cpp"
+#include "solver.cpp"
 
 
 int* solve0(int pos,char* state) {
@@ -32,10 +31,8 @@ int* solve0(int pos,char* state) {
         case 5:
             return SOLVE_main::solve(state);
         case 6:
-            return rubik::solve(state);
-        case 7:
             return SmallCubeSolver::solve(state);
-        case 8:
+        case 7:
             return solver::solve(state);
     }
     return ct5::solve(state);

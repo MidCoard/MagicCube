@@ -6,7 +6,13 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "solver.h"
+#include "Solvers.h"
+
+namespace solver {
+
+    char * args[21];
+
+    int ret[10000];
 
 #define FOR(a,b) for(a=0;a<b;a++)
 #define TAB [256]
@@ -174,4 +180,26 @@ char* solveSolver(char **argv) {
 		count += c>90?3:1;
 	}
 	return answer;
+}
+
+    int* solve(char* str) {
+        int cnt = 1;
+        char *p;
+        const char *delim = " ";
+        p = strtok(str, delim);
+        while(p) {
+            args[cnt++] = p;
+            p = strtok(NULL, delim);
+        }
+        char* answer = solveSolver(args);
+        int length = strlen(answer);
+        cnt = 1;
+        for (int i = 0;i<length;i+=3) {
+            char cs = answer[i];
+            int count = answer[i+1] - '0';
+            ret[cnt++] = getAnswer(cs) + (count - 1) * 6;
+        }
+        ret[0] = cnt - 1;
+        return ret;
+    }
 }
