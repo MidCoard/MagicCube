@@ -43,4 +43,5 @@ int getAnswer(char sig) {
 }
 
 
+
 #endif //TEST_SOLVER_H

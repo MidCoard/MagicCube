@@ -70,18 +70,13 @@ int IntRow::get(int pos) {
     return values[pos];
 }
 
-void IntRow::init(int *num, int count) {
-    for (int i = 0;i<count;i++)
-        this->values[i] = num[i];
-}
-
 void IntRow::set(int pos, int value) {
     this->values[pos] = value;
 }
 
 void IntRow::init(float *num, int count) {
     for (int i = 0;i<count;i++)
-        set(i,num[i]);
+        set(i,round(num[i]));
 }
 
 IntRow::IntRow(int * num, int count) {

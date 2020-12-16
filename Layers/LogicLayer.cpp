@@ -1,10 +1,11 @@
 #include "LogicLayer.h"
 #include "RenderLayer.h"
-#include "Matrix.h"
-#include "ColorState.h"
+#include "Matrix.cpp"
+#include "ColorState.cpp"
 #include "vector"
 #include "solvers/SolverHandler.h"
 #include "iostream"
+#include <ctime>
 
 using namespace std;
 
@@ -46,31 +47,33 @@ namespace Logic {
     }
 
     void exec(int st) {
-        switch (st % 6) {
-            //todo
-            case 0:
-                Render::rotate_X_1((st / 6)  < 2  ? ((st/6)+1) * 90 : (-90));
-            case 1:
-                Render::rotate_X_1((st / 6)  < 2  ? ((st/6)+1) * 90 : (-90));
-            case 2:
-                Render::rotate_X_1((st / 6)  < 2  ? ((st/6)+1) * 90 : (-90));
-            case 3:
-                Render::rotate_X_1((st / 6)  < 2  ? ((st/6)+1) * 90 : (-90));
-            case 4:
-                Render::rotate_X_1((st / 6)  < 2  ? ((st/6)+1) * 90 : (-90));
-            case 5:
-                Render::rotate_X_1((st / 6)  < 2  ? ((st/6)+1) * 90 : (-90));
+        int ans = st % 6;
+        if (ans == 0) {
+            Render::rotate_Z_3((st / 6)  < 2  ? ((st/6)+1) * 90 : (-90));
+        }else if(ans == 1){
+            Render::rotate_Z_1((st / 6)  < 2  ? -((st/6)+1) * 90 : (90));
+
+        }else if(ans == 2){
+            Render::rotate_Y_1((st / 6)  < 2  ? -((st/6)+1) * 90 : (90));
+        }else if(ans == 3){
+            Render::rotate_Y_3((st / 6)  < 2  ? ((st/6)+1) * 90 : (-90));
+        }else if(ans == 4){
+            Render::rotate_X_1((st / 6)  < 2  ? ((st/6)+1) * 90 : (-90));
+        }else if(ans == 5){
+            Render::rotate_X_3((st / 6)  < 2  ? -((st/6)+1) * 90 : (90));
         }
     }
 
     void updateGameState() {
+//        exec(16);
         if (inSolving) {
             if (!Render::isIgnoreKeyboardInput() && isStartGameLoop() && !inShuffling) {
-                exec(answer[nowState++]);
                 if (nowState > allState) {
                     inSolving = false;
-                    cout<<"Solved it!"<<endl;
+                    return;
                 }
+                cout << answer[nowState]<<endl;
+                exec(answer[nowState++]);
             }
         } else if (inShuffling) {
             if (!Render::isIgnoreKeyboardInput() && isStartGameLoop() && !inSolving) {
@@ -129,16 +132,27 @@ namespace Logic {
     char stateStr[] = "UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR";
 
     void solve() {
-        for (int i = 0;i<0;i++)
-            for (int j = 0;j<0;j++)
-                for (int k = 0;k<0;k++) {
+        for (int i = 0;i<67;i++)
+            stateStr[i] = ' ';
+        for (int i = 0;i<3;i++)
+            for (int j = 0;j<3;j++)
+                for (int k = 0;k<3;k++) {
+                    cout << i<<" "<<j<<" "<<k<<" "<<endl;
                     if (i == 1 && j == 1 && k == 1) {
                         continue;
                     }
                     Matrix matrix(Render::getCubeState(i,j,k));
                     Matrix ret = colorMatrix * matrix;
+                    if ( i == 1 && j == 0 && k == 2)
+                        for (int l = 0;l<6;l++) {
+                            for (int p = 0; p < 4; p++)
+                                cout << ret[l][p] << " ";
+                            cout<<endl;
+                        }
                     states[i*9+j*3+k].init(ret);
+                    cout<<"FINISHED"<<endl;
                 }
+        cout<<"CALC FINISHED"<<endl;
         stateStr[0] = getColorState(0,2,1).getUp();
         stateStr[1] = getColorState(0,2,1).getFront();
         stateStr[3] = getColorState(1,2,2).getUp();
@@ -152,6 +166,7 @@ namespace Logic {
         stateStr[12] = getColorState(0,0,1).getDown();
         stateStr[13] = getColorState(0,0,1).getFront();
         stateStr[15] = getColorState(1,0,2).getDown();
+        cout << stateStr[15] <<endl;
         stateStr[16] = getColorState(1,0,2).getRight();
         stateStr[18] = getColorState(2,0,1).getDown();
         stateStr[19] = getColorState(2,0,1).getBack();
@@ -201,16 +216,19 @@ namespace Logic {
         stateStr[64] = getColorState(2,0,2).getDown();
         stateStr[65] = getColorState(2,0,2).getBack();
         stateStr[66] = getColorState(2,0,2).getRight();
-
+        cout <<stateStr<<endl;
         answer = solve0(0,stateStr);
+        cout <<"Solve0 finished"<<endl;
         nowState = 1;
         allState = answer[0];
+        cout<< "Start Solving"<<endl;
         inSolving = true;
     }
 
     void shuffle() {
         srand(time(NULL));
-        step = random(100,200);
+        step = random(50,100);
+        nowStep = 0;
         inShuffling = true;
     }
 

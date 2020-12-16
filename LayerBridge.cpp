@@ -3,6 +3,8 @@
 
 int count1 = 0;
 int count2 = 0;
+int count3 = 0;
+int count4 = 0;
 int spacePressCount = 0;
 
 void render(double elapsed) {
@@ -66,117 +68,95 @@ void handleInput() {
     if(!Render::ignoreKeyboardInput&&StartGameLoop && !Logic::inSolving && !Logic::inShuffling) {
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_Q) == GLFW_PRESS) {
             Render::rotate_Y_1(-90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
             Render::rotate_Y_1(90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
             Render::rotate_Y_2(-90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_S) == GLFW_PRESS) {
             Render::rotate_Y_2(90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_Z) == GLFW_PRESS) {
             Render::rotate_Y_3(-90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_X) == GLFW_PRESS) {
             Render::rotate_Y_3(90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_U) == GLFW_PRESS) {
             Render::rotate_X_1(-90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_J) == GLFW_PRESS) {
             Render::rotate_X_1(90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_I) == GLFW_PRESS) {
             Render::rotate_X_2(-90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_K) == GLFW_PRESS) {
             Render::rotate_X_2(90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_O) == GLFW_PRESS) {
             Render::rotate_X_3(-90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_L) == GLFW_PRESS) {
             Render::rotate_X_3(90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_1) == GLFW_PRESS) {
             Render::rotate_Z_1(90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_0) == GLFW_PRESS) {
             Render::rotate_Z_1(-90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_2) == GLFW_PRESS) {
             Render::rotate_Z_2(90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_9) == GLFW_PRESS) {
             Render::rotate_Z_2(-90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_3) == GLFW_PRESS) {
             Render::rotate_Z_3(90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_8) == GLFW_PRESS) {
             Render::rotate_Z_3(-90);
-            if (Logic::isSolved()) {
-                cout<<"Solved it!"<<endl;
-            }
+            
         }
         if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_V) == GLFW_PRESS) {
-            Logic::solve();
+            count3++;
+            if(count3==1) {
+                if (!Logic::inShuffling && !Logic::inSolving)
+                    Logic::solve();
+            }
+        }
+        if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_V) == GLFW_RELEASE){
+            count3=0;
         }
         if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_C) == GLFW_PRESS) {
-            Logic::shuffle();
+            count4++;
+            if(count4==1) {
+                if (!Logic::inShuffling && !Logic::inSolving)
+                    Logic::shuffle();
+            }
+        }
+        if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_C) == GLFW_RELEASE){
+            count4=0;
         }
 
     }

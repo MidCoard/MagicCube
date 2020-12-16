@@ -173,9 +173,9 @@ namespace Render {
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         float alpha = abs(sin(glfwGetTime()));
-        renderText(vec3(0,2,0),1.1f,1.1f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Title.png");
-        renderText(vec3(0,0.2,0),0.93f,0.93f,alpha,view,projection,(char*)"C:/Users/Ken/DeskTop/Start.png");
-        renderText(vec3(0,-2,0),0.6f,0.6f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Help.png");
+        renderText(vec3(0,2,0),1.1f,1.1f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Title.png");
+        renderText(vec3(0,0.2,0),0.93f,0.93f,alpha,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Start.png");
+        renderText(vec3(0,-2,0),0.6f,0.6f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Help.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     };
@@ -185,8 +185,8 @@ namespace Render {
         view = lookAt(vec3(0.0f,0.5f,10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderText(vec3(0,0.5,0),1.0f,1.0f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Pause.png");
-        renderText(vec3(0,-1,0),0.8f,0.8f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Help.png");
+        renderText(vec3(0,0.5,0),1.0f,1.0f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Pause.png");
+        renderText(vec3(0,-1,0),0.8f,0.8f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Help.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     }
@@ -196,7 +196,7 @@ namespace Render {
         view = lookAt(vec3(0.0f,0.5f,10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderText(vec3(0,-1,0),1.4f,4.2f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/HelpContent.png");
+        renderText(vec3(0,-1,0),1.4f,4.2f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/HelpContent.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     }
@@ -536,6 +536,9 @@ namespace Render {
                     cout<< "%%%%%%%%%"<<endl;
                 }
 #endif
+                if (Logic::isSolved()) {
+                    cout<<"Solved it!"<<endl;
+                }
                 break;
             }
         }

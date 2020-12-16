@@ -27,9 +27,8 @@ public:
         return get(pos);
     }
 
-    void init(float*,int);
 
-    void init(int*,int);
+    void init(float*,int);
 
     void set(int,int);
 };
