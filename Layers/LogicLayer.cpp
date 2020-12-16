@@ -25,14 +25,24 @@ namespace Logic {
 
     bool inSolving = false;
 
+    bool inShuffling = false;
+
     int* answer;
 
     int nowState = 0;
 
     int allState = 0;
 
+    int step = 0;
+
+    int nowStep = 0;
+
     bool isInitialize() {
         return initialize;
+    }
+
+    static unsigned int random(unsigned int a, unsigned int b) {
+        return rand()%(b-a+1) + a;
     }
 
     void exec(int st) {
@@ -55,12 +65,22 @@ namespace Logic {
 
     void updateGameState() {
         if (inSolving) {
-            if (!Render::isIgnoreKeyboardInput() && isStartGameLoop()) {
+            if (!Render::isIgnoreKeyboardInput() && isStartGameLoop() && !inShuffling) {
                 exec(answer[nowState++]);
                 if (nowState > allState) {
                     inSolving = false;
                     cout<<"Solved it!"<<endl;
                 }
+            }
+        } else if (inShuffling) {
+            if (!Render::isIgnoreKeyboardInput() && isStartGameLoop() && !inSolving) {
+                srand(time(NULL));
+                int type = random(0, 5);
+                int count = random(0, 2);
+                exec(type + count * 6);
+                nowStep++;
+                if (nowStep == step)
+                    inShuffling = false;
             }
         }
     }
@@ -186,6 +206,12 @@ namespace Logic {
         nowState = 1;
         allState = answer[0];
         inSolving = true;
+    }
+
+    void shuffle() {
+        srand(time(NULL));
+        step = random(100,200);
+        inShuffling = true;
     }
 
 

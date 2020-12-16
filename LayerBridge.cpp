@@ -63,7 +63,7 @@ void handleInput() {
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_H) == GLFW_RELEASE && (!StartGameLoop || ifPause)){
         count2=0;
     }//帮助界面
-    if(!Render::ignoreKeyboardInput&&StartGameLoop && !Logic::inSolving) {
+    if(!Render::ignoreKeyboardInput&&StartGameLoop && !Logic::inSolving && !Logic::inShuffling) {
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_Q) == GLFW_PRESS) {
             Render::rotate_Y_1(-90);
             if (Logic::isSolved()) {
@@ -175,5 +175,9 @@ void handleInput() {
         if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_V) == GLFW_PRESS) {
             Logic::solve();
         }
+        if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_C) == GLFW_PRESS) {
+            Logic::shuffle();
+        }
+
     }
 }
