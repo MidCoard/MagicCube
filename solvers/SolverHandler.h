@@ -30,7 +30,7 @@ int* solve0(int pos,char* state) {
         case 4:
             return JohnnyX::solve(state);
         case 5:
-            return main::solve(state);
+            return SOLVE_main::solve(state);
         case 6:
             return rubik::solve(state);
         case 7:

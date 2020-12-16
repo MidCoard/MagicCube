@@ -11,7 +11,7 @@
 char* solveMain(char**);
 
 
-namespace main{
+namespace SOLVE_main{
 
     char * args[21];
 

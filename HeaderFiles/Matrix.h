@@ -34,7 +34,9 @@ public:
     void set(int,int);
 };
 
-IntRow directions[] = {IntRow(new int[]{0,1,0},3),IntRow(new int[]{0,-1,0},3),IntRow(new int[]{0,0,-1},3),IntRow(new int []{0,0,1},3),IntRow(new int[]{-1,0,0},3),IntRow(new int[]{1,0,0},3)};
+int directionsData[6][3] = {{0,1,0},{0,-1,0},{0,0,-1},{0,0,1},{-1,0,0},{1,0,0}};
+
+IntRow directions[] = {IntRow(directionsData[0],3),IntRow(directionsData[1],3),IntRow(directionsData[2],3),IntRow(directionsData[3],3),IntRow(directionsData[4],3),IntRow(directionsData[5],3)};
 
 class Matrix {
 private:

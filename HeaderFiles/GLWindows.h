@@ -9,7 +9,7 @@
 
 #define ErrorCode -1
 
-mat4 transform = mat4(1.0f);
+mat4 transformMatrix = mat4(1.0f);
 
 enum WindowColor{
     R,
@@ -70,9 +70,9 @@ GLWindow::~GLWindow() {
 
 void frameBufferSizeCallback(GLFWwindow* window, int width, int height){
     glViewport(0, 0, width, height);
-    transform = mat4(1.0f);
-    if(height>width) transform = scale(transform,vec3((float)width/(float)height,1.0f,(float)width/(float)height));
-    else transform = scale(transform,vec3((float)height/(float)width,1.0f,(float)height/(float)width));
+    transformMatrix = mat4(1.0f);
+    if(height>width) transformMatrix = scale(transformMatrix, vec3((float)width / (float)height, 1.0f, (float)width / (float)height));
+    else transformMatrix = scale(transformMatrix, vec3((float)height / (float)width, 1.0f, (float)height / (float)width));
 }
 
 #endif

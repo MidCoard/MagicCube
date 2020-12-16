@@ -237,7 +237,7 @@ namespace Render {
 
         projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
 
-        cubeShader->setMat4("transform", transform);
+        cubeShader->setMat4("transform", transformMatrix);
 
         cubeShader->setMat4("view", view);
 
@@ -253,7 +253,7 @@ namespace Render {
     void setLightMatrix(){
         view = camera->getViewMatrix();
 
-        lightShader->setMat4("transform", transform);
+        lightShader->setMat4("transform", transformMatrix);
 
         lightShader->setMat4("lightModel",lightModel);
 
