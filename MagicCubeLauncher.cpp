@@ -24,7 +24,7 @@ bool isInitialize() {
 int main(int argc, char *argv[]) {
     if (argc > 1)
         initialize(argv[1]);
-    else initialize("");
+    else initialize((char*)"");
     if (isInitialize()) {
         double secsPerUpdate = 1.0 / 100.0;
         double previous = getTime();

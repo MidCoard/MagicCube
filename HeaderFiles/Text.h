@@ -15,17 +15,17 @@
 using namespace glm;
 
 Shader *textShader;
-GLuint textVAO, textVBO, textEBO, textureVBO;
+GLuint textVAO, textVBO, textureVBO;
 GLuint texture;
 
 
 vec3 textVertices[] = {
-        vec3(-3.0f, 1.0f, 0.0f),
-        vec3(3.0f, 1.0f, 0.0f),
-        vec3(3.0f, -1.0f, 0.0f),
-        vec3(3.0f, -1.0f, 0.0f),
-        vec3(-3.0f, 1.0f, 0.0f),
-        vec3(-3.0f, -1.0f, 0.0f)
+        vec3(-1.0f, 1.0f, 0.0f),
+        vec3(1.0f, 1.0f, 0.0f),
+        vec3(1.0f, -1.0f, 0.0f),
+        vec3(1.0f, -1.0f, 0.0f),
+        vec3(-1.0f, 1.0f, 0.0f),
+        vec3(-1.0f, -1.0f, 0.0f)
 };
 
 vec2 textureVertices[] = {
@@ -85,7 +85,6 @@ void renderText(vec3 position, float scaleX, float scaleY, float Alpha, mat4 vie
     mat4 model = mat4(1.0f);
     model = translate(model, position);
     model = glm::scale(model,vec3(scaleX,scaleY,1.0f));
-//    model = rotate(model,radians())
 
     textShader->setMat4("model",model);
     textShader->setMat4("view", view);

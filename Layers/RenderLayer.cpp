@@ -193,30 +193,30 @@ namespace Render {
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         float alpha = abs(sin(glfwGetTime()));
-        renderText(vec3(0,2,0),1.1f,1.1f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Title.png");
-        renderText(vec3(0,0.2,0),0.93f,0.93f,alpha,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Start.png");
-        renderText(vec3(0,-2,0),0.6f,0.6f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Help.png");
+        renderText(vec3(0,2,0),3.3f,1.1f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Title.png");
+        renderText(vec3(0,0.2,0),2.79f,0.93f,alpha,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Start.png");
+        renderText(vec3(0,-2,0),1.8f,0.6f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Help.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     };
 
     void Pause(){
         projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
-        view = lookAt(vec3(0.0f,0.5f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+        view = lookAt(vec3(0.0f,0.0f,10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderText(vec3(0,0.5,0),1.0f,1.0f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Pause.png");
-        renderText(vec3(0,-1,0),0.8f,0.8f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Help.png");
+        renderText(vec3(0,0.5,0),3.0f,1.0f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Pause.png");
+        renderText(vec3(0,-1,0),2.4f,0.8f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/Help.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     }
 
     void Help(){
         projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
-        view = lookAt(vec3(0.0f,0.5f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+        view = lookAt(vec3(0.0f,0.0f,10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderText(vec3(0,-1,0),1.4f,4.2f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/HelpContent.png");
+        renderText(vec3(0,0,0),4.2f,4.2f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/HelpContent.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     }
