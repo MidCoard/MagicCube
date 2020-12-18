@@ -3,6 +3,10 @@
 //
 
 #include "Matrix.h"
+#include<iostream>
+
+using namespace std;
+
 
 Matrix::Matrix(int n, int m) {
     this->n = n;
@@ -25,6 +29,12 @@ void Matrix::init() {
 void Matrix::init(float *num, int count) {
     for (int i = 0;i<count;i++)
         this->values[i / this->m][i % this->m] = num[i];
+}
+
+void Matrix::init(int *num, int count) {
+    for (int i = 0;i<count;i++)
+        this->values[i / this->m][i % this->m] = num[i];
+
 }
 
 Matrix const Matrix::operator*(Matrix matrix) {
@@ -83,4 +93,19 @@ IntRow::IntRow(int * num, int count) {
     for (int i = 0;i<count;i++)
         this->values[i] = num[i];
     this->n = count;
+}
+
+bool IntRow::operator==(IntRow other) {
+    for (int i = 0;i<n;i++)
+        if (values[i] != other[i])
+            return false;
+    return true;
+}
+
+void Matrix::print() {
+    for (int i = 0;i<n;i++) {
+        for (int j = 0; j < m; j++)
+            cout << round(get(i, j)) << " ";
+        cout<<endl;
+    }
 }

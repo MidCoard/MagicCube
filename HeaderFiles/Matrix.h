@@ -27,13 +27,14 @@ public:
         return get(pos);
     }
 
+    bool operator==(IntRow);
 
     void init(float*,int);
 
     void set(int,int);
 };
 
-int directionsData[6][3] = {{0,1,0},{0,-1,0},{0,0,-1},{0,0,1},{-1,0,0},{1,0,0}};
+int directionsData[6][3] = {{0,-1,0},{0,1,0},{0,0,1},{0,0,-1},{1,0,0},{-1,0,0}};
 
 IntRow directions[] = {IntRow(directionsData[0],3),IntRow(directionsData[1],3),IntRow(directionsData[2],3),IntRow(directionsData[3],3),IntRow(directionsData[4],3),IntRow(directionsData[5],3)};
 
@@ -46,7 +47,6 @@ private:
     void init();
 
 public:
-
     Matrix(int,int);
 
     Matrix(mat4);
@@ -54,6 +54,7 @@ public:
     Matrix const operator * (Matrix matrix);
 
     void init(float*,int);
+    void init(int*,int);
 
     float get(int,int);
 
@@ -66,6 +67,8 @@ public:
     IntRow operator[](int pos) {
         return getIntRow(pos);
     }
+
+    void print();
 };
 
 

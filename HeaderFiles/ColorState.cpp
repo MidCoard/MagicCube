@@ -3,6 +3,9 @@
 //
 
 #include "ColorState.h"
+#include "iostream"
+
+using namespace std;
 
 ColorState::ColorState(char up, char down, char left, char right, char front, char back):up(up),down(down),left(left),right(right),front(front),back(back) {
 }
@@ -16,21 +19,7 @@ void ColorState::init(char up, char down, char left, char right, char front, cha
     this->back = back;
 }
 
-char * ColorState::getcharPosition(IntRow intRow) {
-    for (int i = 0;i<6;i++) {
-        bool flag = false;
-        for (int j = 0; j < 3; j++)
-            if (directions[i][j] != intRow[j]) {
-                flag = true;
-                break;
-            }
-        if (!flag)
-            return getcharPosition(i);
-    }
-    return NULL;
-}
-
-char * ColorState::getcharPosition(int pos) {
+char * ColorState::getColorPosition(int pos) {
     switch (pos) {
         case 0:
             return &up;
@@ -45,15 +34,23 @@ char * ColorState::getcharPosition(int pos) {
         case 5:
             return &back;
     }
+    cout<<"ERROR"<<endl;
+    return NULL;
+}
+
+char * ColorState::getColorPosition(IntRow intRow) {
+    for (int i = 0;i<6;i++)
+        if (directions[i] == intRow)
+            return getColorPosition(i);
+    cout<<"ERROR"<<endl;
     return NULL;
 }
 
 void ColorState::init(Matrix matrix) {
     for (int i = 0;i<6;i++) {
         IntRow intRow = matrix.getIntRow(i);
-        *getcharPosition(intRow) = getColor(intRow[3]);
+        *getColorPosition(intRow) = getColor(intRow[3]-1);
     }
-        
 }
 
 char ColorState::getBack() {
@@ -80,8 +77,21 @@ char ColorState::getUp() {
     return this->up;
 }
 
+void ColorState::print() {
+    cout<<up<<" ";
+    cout<<down<<" ";
+    cout<<left<<" ";
+    cout<<right<<" ";
+    cout<<front<<" ";
+    cout<<back<<endl;
+}
+
 char colors[6] = {'U','D','L','R','F','B'};
 
+void setColor(int pos,char color){
+    colors[pos] = color;
+}
+
 char getColor(int pos) {
-    return colors[pos-1];
+    return colors[pos];
 }

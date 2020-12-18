@@ -5,6 +5,10 @@
 #ifndef __SOLVERS_H
 #define __SOLVERS_H
 
+#include "iostream"
+
+using namespace std;
+
 #define SOLVER_U 0
 #define SOLVER_D 1
 #define SOLVER_L 2
@@ -39,6 +43,26 @@ int getAnswer(char sig) {
         case 'B':
             return 5;
     }
+    cout<<"ERROR"<<endl;
+    return -1;
+}
+
+char getAnswer(int ind) {
+    switch (ind) {
+        case 0:
+            return 'U';
+        case 1:
+            return 'D';
+        case 2:
+            return 'L';
+        case 3:
+            return 'R';
+        case 4:
+            return 'F';
+        case 5:
+            return 'B';
+    }
+    cout<<"ERROR"<<endl;
     return -1;
 }
 

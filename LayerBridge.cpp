@@ -38,9 +38,7 @@ void handleInput() {
     }//恢复正视角
 
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_RIGHT_ALT) == GLFW_PRESS){
-        for(int i=0;i<NUM_CUBES;i++){
-        Render::allCubesState[i] = mat4(1.0f);
-        }
+        Render::resetStates();
     }//还原魔方至初始状态
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS){
         count1++;
@@ -158,6 +156,8 @@ void handleInput() {
         if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_C) == GLFW_RELEASE){
             count4=0;
         }
-
+    }
+    if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_B) == GLFW_PRESS) {
+        Logic::clearBlocking();
     }
 }

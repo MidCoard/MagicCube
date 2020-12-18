@@ -33,6 +33,8 @@ namespace Render {
     void rotate_Z_2(float degrees);
 
     void rotate_Z_3(float degrees);
+
+    void resetStates();
 }
 
 

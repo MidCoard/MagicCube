@@ -124,7 +124,13 @@ namespace Render {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
     mat4 getCubeState(int x,int y,int z) {
-        return allCubesState[x * 9 + y * 3 + z];
+        return allCubesState[x*9  + y * 3  + z ];
+    }
+
+    void resetStates() {
+        for(int i=0;i<NUM_CUBES;i++){
+            Render::allCubesState[i] = mat4(1.0f);
+        }
     }
 
 
@@ -536,7 +542,7 @@ namespace Render {
                     cout<< "%%%%%%%%%"<<endl;
                 }
 #endif
-                if (Logic::isSolved()) {
+                if (Logic::isSolved() && !Logic::isInShuffling()) {
                     cout<<"Solved it!"<<endl;
                 }
                 break;
@@ -592,54 +598,72 @@ namespace Render {
     }
 
     void rotate_X_1(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_X_1;
         targetAngle = degrees;
     }
 
     void rotate_X_2(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_X_2;
         targetAngle = degrees;
     }
 
     void rotate_X_3(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_X_3;
         targetAngle = degrees;
     }
 
     void rotate_Y_1(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Y_1;
         targetAngle = degrees;
     }
 
     void rotate_Y_2(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Y_2;
         targetAngle = degrees;
     }
 
     void rotate_Y_3(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Y_3;
         targetAngle = degrees;
     }
 
     void rotate_Z_1(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Z_1;
         targetAngle = degrees;
     }
 
     void rotate_Z_2(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Z_2;
         targetAngle = degrees;
     }
 
     void rotate_Z_3(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Z_3;
         targetAngle = degrees;

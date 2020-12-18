@@ -6,6 +6,12 @@
 #define __LOGICLAYER_H
 namespace Logic {
     bool isSolved();
+
+    bool isInSolving();
+
+    bool isInShuffling();
+
+    void clearBlocking();
 }
 
 #endif //TEST_LOGICLAYER_H
