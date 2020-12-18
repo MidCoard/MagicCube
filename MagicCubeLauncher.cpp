@@ -4,9 +4,9 @@
 
 using namespace std;
 
-void initialize() {
+void initialize(char* state) {
     Logic::initLogicLayer();
-    Render::initRenderLayer();
+    Render::initRenderLayer(state);
 }
 
 void sync(double loopStartTime) {
@@ -21,8 +21,10 @@ bool isInitialize() {
     return Logic::isInitialize() && Render::isInitialize();
 }
 
-int main() {
-    initialize();
+int main(int argc, char *argv[]) {
+    if (argc > 1)
+        initialize(argv[1]);
+    else initialize("");
     if (isInitialize()) {
         double secsPerUpdate = 1.0 / 100.0;
         double previous = getTime();

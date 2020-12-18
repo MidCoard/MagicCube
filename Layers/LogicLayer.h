@@ -11,7 +11,13 @@ namespace Logic {
 
     bool isInShuffling();
 
+    bool isInSelecting();
+
+    void setMode(int);
+
     void clearBlocking();
+
+    void saveState();
 }
 
 #endif //TEST_LOGICLAYER_H

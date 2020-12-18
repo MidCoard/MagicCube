@@ -123,8 +123,8 @@ namespace Render {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-    mat4 getCubeState(int x,int y,int z) {
-        return allCubesState[x*9  + y * 3  + z ];
+    mat4 * getCubeState(int x,int y,int z) {
+        return &allCubesState[x*9  + y * 3  + z ];
     }
 
     void resetStates() {
@@ -134,7 +134,7 @@ namespace Render {
     }
 
 
-    void initRenderLayer() {
+    void initRenderLayer(char* state) {
         if (initialize)
             return;
 
@@ -169,7 +169,21 @@ namespace Render {
 
         lightModel = translate(lightModel, lightPosition);
         lightModel = scale(lightModel, vec3(0.2f));
-
+        string check(state);
+        if (!check.empty()) {
+            FILE *file = fopen(state, "rb");
+            if (file == NULL) {
+                cout<<"Cannot open "<<state<<endl;
+                cout<<"Use default states"<<endl;
+            } else {
+                cout<<"Find valid states"<<endl;
+                for (int i = 0; i < 3; i++)
+                    for (int j = 0; j < 3; j++)
+                        for (int k = 0; k < 3; k++)
+                            fread(Render::getCubeState(i, j, k), sizeof(mat4), 1, file);
+                fclose(file);
+            }
+        }
         initialize = true;
     }
 

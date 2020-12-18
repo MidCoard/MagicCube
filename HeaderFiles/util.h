@@ -32,4 +32,8 @@ int exec(const char *in, char *out) {
     return 1;
 }
 
+bool endsWith(string str,string sub){
+    return str.rfind(sub) == (str.length() - sub.length());
+}
+
 #endif

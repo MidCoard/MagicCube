@@ -5,6 +5,7 @@ int count1 = 0;
 int count2 = 0;
 int count3 = 0;
 int count4 = 0;
+int count5 = 0;
 int spacePressCount = 0;
 
 void render(double elapsed) {
@@ -63,78 +64,112 @@ void handleInput() {
     if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_H) == GLFW_RELEASE && (!StartGameLoop || ifPause)){
         count2=0;
     }//帮助界面
+
+    if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_B) == GLFW_PRESS) {
+        Logic::clearBlocking();
+    }
+
+    if (Logic::isInSelecting()) {
+        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_0) == GLFW_PRESS) {
+            Logic::setMode(0);
+        }
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_1) == GLFW_PRESS) {
+            Logic::setMode(1);
+        }else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_2) == GLFW_PRESS) {
+            Logic::setMode(2);
+        }else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_3) == GLFW_PRESS) {
+            Logic::setMode(3);
+        }else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_4) == GLFW_PRESS) {
+            Logic::setMode(4);
+        }else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_5) == GLFW_PRESS) {
+            Logic::setMode(5);
+        }else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_6) == GLFW_PRESS) {
+            Logic::setMode(6);
+        }
+        return;
+    }
+
     if(!Render::ignoreKeyboardInput&&StartGameLoop && !Logic::inSolving && !Logic::inShuffling) {
         if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_Q) == GLFW_PRESS) {
             Render::rotate_Y_1(-90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
             Render::rotate_Y_1(90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
             Render::rotate_Y_2(-90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_S) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_S) == GLFW_PRESS && !glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
             Render::rotate_Y_2(90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_Z) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_Z) == GLFW_PRESS) {
             Render::rotate_Y_3(-90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_X) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_X) == GLFW_PRESS) {
             Render::rotate_Y_3(90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_U) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_U) == GLFW_PRESS) {
             Render::rotate_X_1(-90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_J) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_J) == GLFW_PRESS) {
             Render::rotate_X_1(90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_I) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_I) == GLFW_PRESS) {
             Render::rotate_X_2(-90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_K) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_K) == GLFW_PRESS) {
             Render::rotate_X_2(90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_O) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_O) == GLFW_PRESS) {
             Render::rotate_X_3(-90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_L) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_L) == GLFW_PRESS) {
             Render::rotate_X_3(90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_1) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_1) == GLFW_PRESS) {
             Render::rotate_Z_1(90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_0) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_0) == GLFW_PRESS) {
             Render::rotate_Z_1(-90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_2) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_2) == GLFW_PRESS) {
             Render::rotate_Z_2(90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_9) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_9) == GLFW_PRESS) {
             Render::rotate_Z_2(-90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_3) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_3) == GLFW_PRESS) {
             Render::rotate_Z_3(90);
             
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_8) == GLFW_PRESS) {
+        else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_8) == GLFW_PRESS) {
             Render::rotate_Z_3(-90);
             
+        }
+
+        if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+            count5++;
+            if (count5 == 1) {
+                Logic::saveState();
+            }
+        } else if (glfwGetKey(Render::getWindow()->getWindow(), GLFW_KEY_S) == GLFW_RELEASE && glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE) {
+            count5 = 0;
         }
         if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_V) == GLFW_PRESS) {
             count3++;
@@ -143,7 +178,7 @@ void handleInput() {
                     Logic::solve();
             }
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_V) == GLFW_RELEASE){
+        else if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_V) == GLFW_RELEASE){
             count3=0;
         }
         if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_C) == GLFW_PRESS) {
@@ -153,11 +188,8 @@ void handleInput() {
                     Logic::shuffle();
             }
         }
-        if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_C) == GLFW_RELEASE){
+        else if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_C) == GLFW_RELEASE){
             count4=0;
         }
-    }
-    if (glfwGetKey(Render::getWindow()->getWindow(),GLFW_KEY_B) == GLFW_PRESS) {
-        Logic::clearBlocking();
     }
 }

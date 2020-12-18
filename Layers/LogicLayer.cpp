@@ -3,10 +3,12 @@
 #include "Matrix.cpp"
 #include "ColorState.cpp"
 #include "vector"
-#include "solvers/SolverHandler.h"
 #include "iostream"
 #include <ctime>
 #include <Shader.h>
+#include <algorithm>
+#include "io.h"
+#include "util.h"
 #include "solvers/Solvers.h"
 
 using namespace std;
@@ -30,6 +32,8 @@ namespace Logic {
 
     bool inShuffling = false;
 
+    bool inSelecting = false;
+
     int* answer;
 
     int nowState = 0;
@@ -52,7 +56,7 @@ namespace Logic {
         return rand()%(b-a+1) + a;
     }
 
-    void exec(int st) {
+    void execStep(int st) {
         int ans = st % 6;
         if (ans == 0) {
             Render::rotate_Y_1((st / 6)  < 2  ? -((st/6)+1) * 90 : (90)); // U
@@ -70,9 +74,62 @@ namespace Logic {
     }
 
 
+    vector<string> solversName;
+
+    char outAnswer[10000];
+    char tempAnswer[10000];
+
+    int stepsAnswer[10000];
+
+    int* solve0(int pos,char* state) {
+        memset(outAnswer,0,sizeof(outAnswer));
+        exec(("solvers\\" + solversName[pos] + " " + state).c_str(),outAnswer);
+        int length = strlen(outAnswer);
+        int cnt = 0;
+        for (int i = 0;i<length;i++)
+            if (outAnswer[i] != ' ' && outAnswer[i] != '\n' && outAnswer[i] != '\r')
+                tempAnswer[cnt++] = outAnswer[i];
+        tempAnswer[cnt] = 0;
+        length = strlen(tempAnswer);
+        cnt = 1;
+        for (int i = 0;i<length;i+=2) {
+            char cs = tempAnswer[i];
+            int count = tempAnswer[i+1] - '0';
+            stepsAnswer[cnt++] = getAnswer(cs) + (count - 1) * 6;
+        }
+        stepsAnswer[0] = cnt - 1;
+        return stepsAnswer;
+    }
+
+    int mode = -1;
+
+    void setMode(int m) {
+        mode = m;
+    }
+
+    char stateStr[] = "UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR";
+    //UF LU UB LD RF DF RB DB FR DL BR UL UFR URB FUL FLD DFL DLB RBU RUF
+
     void updateGameState() {
-//        exec(16);
-        if (inSolving) {
+        if (inSelecting) {
+            if (mode != -1 ) {
+                if (mode >= solversName.size()) {
+                    cout<<"Your selection is not valid"<<endl;
+                    cout<<"System helps you to select mode 0"<<endl;
+                    answer = solve0(0, stateStr);
+                }
+                else{
+                    cout<<"You select mode "<<mode<<endl;
+                    answer = solve0(mode,stateStr);}
+//        cout <<"Solve0 finished"<<endl;
+                nowState = 1;
+                allState = answer[0];
+////        cout<< "Start Solving"<<endl;
+                inSolving = true;
+                inSelecting = false;
+            }
+        }
+        else if (inSolving) {
             if (!Render::isIgnoreKeyboardInput() && isStartGameLoop() && !inShuffling) {
                 if (nowState == 1) {
                     solvingStart = glfwGetTime();
@@ -83,7 +140,7 @@ namespace Logic {
                     inSolving = false;
                     return;
                 }
-                exec(answer[nowState++]);
+                execStep(answer[nowState++]);
             }
         } else if (inShuffling) {
             if (!Render::isIgnoreKeyboardInput() && isStartGameLoop() && !inSolving) {
@@ -92,7 +149,7 @@ namespace Logic {
                 while (type == lastType) {
                     type = random(0, 5);
                 }
-                exec(type);
+                execStep(type);
                 nowStep++;
                 lastType = type;
                 if (nowStep == step)
@@ -121,7 +178,7 @@ namespace Logic {
         for (int i = 0;i<3;i++)
             for (int j = 0;j<3;j++)
                 for (int k = 0;k<3;k++) {
-                    Matrix matrix(Render::getCubeState(i,j,k));
+                    Matrix matrix(*Render::getCubeState(i,j,k));
                     POSITION_TEMP[0] = i - 1;
                     POSITION_TEMP[1] = j - 1;
                     POSITION_TEMP[2] = k - 1;
@@ -179,8 +236,9 @@ namespace Logic {
 
     }
 
-    char stateStr[] = "UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR";
-    //UF LU UB LD RF DF RB DB FR DL BR UL UFR URB FUL FLD DFL DLB RBU RUF
+    bool isInSelecting() {
+        return inSelecting;
+    }
 
     bool isInSolving() {
         return inSolving;
@@ -193,6 +251,8 @@ namespace Logic {
     void clearBlocking() {
         inShuffling = false;
         inSolving = false;
+        inSelecting = false;
+        mode = -1;
         step = 0;
         nowStep = 0;
         lastType = -1;
@@ -201,6 +261,7 @@ namespace Logic {
         solvingStart = 0;
         answer = NULL;
     }
+
 
     void solve() {
         for (int i = 0;i<67;i++)
@@ -211,14 +272,10 @@ namespace Logic {
         setColor (3,'R');
         setColor (4,'F');
         setColor (5,'B');
-//        Matrix base(Render::getCubeState(0,0,0));
-//        base.print();
-//        Matrix o = (colorMatrix*base);
-//        o.print();
         for (int i = 0;i<3;i++)
             for (int j = 0;j<3;j++)
                 for (int k = 0;k<3;k++) {
-                    Matrix matrix(Render::getCubeState(i,j,k));
+                    Matrix matrix(*Render::getCubeState(i,j,k));
                     POSITION_TEMP[0] = i - 1;
                     POSITION_TEMP[1] = j - 1;
                     POSITION_TEMP[2] = k - 1;
@@ -226,30 +283,10 @@ namespace Logic {
                     Matrix position(1,4);
                     position.init(POSITION_TEMP,4);
                     Matrix target = position * matrix;
-//                    cout<<"====="<<endl;
-//                    matrix.print();
                     Matrix ret = colorMatrix * matrix;
-//                    if (IntRow(new int[3]{-1,-1,-1},3) == target[0]) {
-//                        cout<<i<<' '<<j<<' '<<k<<endl;
-//                    }
-
 //left : x , right : z
                     getColorState(target[0][0] + 1,target[0][1] + 1,target[0][2] + 1)->init(ret);
-//                    states[i+j*3+k*9].print();
-//                    if (i == 0 && j== 1 && k == 2) {
-//                        matrix.print();
-//                        ret.print();
-//                    }
                 }
-//        Matrix(Render::getCubeState(2,0,2)).print();
-//        getColorState(0,0,0)->print();
-//        for (int i = 0;i<3;i++)
-//            for (int j = 0;j<3;j++)
-//                for (int k = 0;k<3;k++) {
-////                    Matrix(Render::getCubeState(k,j,i)).print();
-//                    getColorState(i,j,k)->print();
-//                }
-//        cout<<"set Colors"<<endl;
         setColor(getAnswer(getColorState(1,2,1)->getUp()),getAnswer(0));
         setColor(getAnswer(getColorState(1,0,1)->getDown()),getAnswer(1));
         setColor(getAnswer(getColorState(1,1,0)->getLeft()),getAnswer(2));
@@ -268,7 +305,7 @@ namespace Logic {
         for (int i = 0;i<3;i++)
             for (int j = 0;j<3;j++)
                 for (int k = 0;k<3;k++) {
-                    Matrix matrix(Render::getCubeState(i,j,k));
+                    Matrix matrix(*Render::getCubeState(i,j,k));
                     POSITION_TEMP[0] = i - 1;
                     POSITION_TEMP[1] = j - 1;
                     POSITION_TEMP[2] = k - 1;
@@ -354,14 +391,21 @@ namespace Logic {
         stateStr[65] = getColorState(2,0,2)->getBack();
         stateStr[66] = getColorState(2,0,2)->getRight();
 //        cout <<stateStr<<endl;
-        answer = solve0(0,stateStr);
-//        cout <<"Solve0 finished"<<endl;
-        nowState = 1;
-        allState = answer[0];
-//        cout<< "Start Solving"<<endl;
-        inSolving = true;
+//        for (int i = 0 ;i<6;i++)
+        mode = -1;
+        inSelecting = true;
+        cout<<"Please press relative numbers to select one mode"<<endl;
 
+    }
 
+    void saveState() {
+        FILE*file = fopen("MagicCube.state","wb");
+        for (int i = 0 ;i<3;i++)
+            for (int j = 0;j<3;j++)
+                for (int k = 0;k<3;k++)
+                    fwrite( Render::getCubeState(i, j, k), sizeof(mat4), 1, file);
+        fclose(file);
+        cout<<"Magic Cube states have been saved as 'MagicCube.state'"<<endl;
     }
 
     void shuffle() {
@@ -372,10 +416,26 @@ namespace Logic {
         inShuffling = true;
     }
 
-
     void initLogicLayer() {
         if (initialize)
             return;
+        _finddata_t fileInfo;
+        intptr_t headerFile = 0;
+        string path = "solvers";
+        int cnt = 0;
+        if ((headerFile = _findfirst(path.append("\\*").c_str(),&fileInfo)) != -1) {
+            cout<<"Find 'solvers'"<<endl;
+            do {
+                if (!(fileInfo.attrib & _A_SUBDIR)) {
+                    string name(fileInfo.name);
+                    if (endsWith(name,".exe")) {
+                        solversName.push_back(name);
+                        cout<<"Find solver "<< cnt++ <<" "<<name<<endl;
+                    }
+                }
+            } while (_findnext(headerFile,&fileInfo) == 0);
+        } else cout<<"Cannot find directory 'solvers'"<<endl;
+        _findclose(headerFile);
         colorMatrix.init(colorMatrixValues, 24);
         initialize = true;
     }
