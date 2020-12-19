@@ -104,7 +104,7 @@ vec3 normalVector[NUM_VERTICES]={
         standardZAxis,
         standardZAxis,
         standardZAxis
-};
+};//Normal Vectors
 
 Color logicColors[6] = {
         RED,
@@ -161,5 +161,4 @@ void setColors(Color up,Color down,Color front,Color back,Color left,Color right
         Colors[count++] = right.toVec3();
     }
 }
-
 #endif

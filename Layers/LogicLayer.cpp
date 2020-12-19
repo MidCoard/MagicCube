@@ -108,7 +108,6 @@ namespace Logic {
     }
 
     char stateStr[] = "UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR";
-    //UF LU UB LD RF DF RB DB FR DL BR UL UFR URB FUL FLD DFL DLB RBU RUF
 
     void updateGameState() {
         if (inSelecting) {
@@ -120,11 +119,10 @@ namespace Logic {
                 }
                 else{
                     cout<<"You select mode "<<mode<<endl;
-                    answer = solve0(mode,stateStr);}
-//        cout <<"Solve0 finished"<<endl;
+                    answer = solve0(mode,stateStr);
+                }
                 nowState = 1;
                 allState = answer[0];
-////        cout<< "Start Solving"<<endl;
                 inSolving = true;
                 inSelecting = false;
             }
@@ -144,7 +142,7 @@ namespace Logic {
             }
         } else if (inShuffling) {
             if (!Render::isIgnoreKeyboardInput() && isStartGameLoop() && !inSolving) {
-                srand(time(NULL));
+                srand(time(nullptr));
                 int type = random(0, 5);
                 while (type == lastType) {
                     type = random(0, 5);
@@ -156,6 +154,18 @@ namespace Logic {
                     inShuffling = false;
             }
         }
+    }
+    int getAllState(){
+        return allState;
+    }
+    int getNowState(){
+        return nowState;
+    }
+    int getNowStep(){
+        return nowStep;
+    }
+    int getStep(){
+        return step;
     }
 
     static ColorState*getColorState(int x,int y,int z) {
@@ -171,10 +181,6 @@ namespace Logic {
         setColor (3,'R');
         setColor (4,'F');
         setColor (5,'B');
-//        Matrix base(Render::getCubeState(0,0,0));
-//        base.print();
-//        Matrix o = (colorMatrix*base);
-//        o.print();
         for (int i = 0;i<3;i++)
             for (int j = 0;j<3;j++)
                 for (int k = 0;k<3;k++) {
@@ -186,20 +192,8 @@ namespace Logic {
                     Matrix position(1,4);
                     position.init(POSITION_TEMP,4);
                     Matrix target = position * matrix;
-//                    cout<<"====="<<endl;
-//                    matrix.print();
                     Matrix ret = colorMatrix * matrix;
-//                    if (IntRow(new int[3]{-1,-1,-1},3) == target[0]) {
-//                        cout<<i<<' '<<j<<' '<<k<<endl;
-//                    }
-
-//left : x , right : z
                     getColorState(target[0][0] + 1,target[0][1] + 1,target[0][2] + 1)->init(ret);
-//                    states[i+j*3+k*9].print();
-//                    if (i == 0 && j== 1 && k == 2) {
-//                        matrix.print();
-//                        ret.print();
-//                    }
                 }
         char up = getColorState(1,2,1)->getUp();
         char down = getColorState(1,0,1)->getDown();
@@ -240,10 +234,6 @@ namespace Logic {
         return inSelecting;
     }
 
-    bool isInSolving() {
-        return inSolving;
-    }
-
     bool isInShuffling() {
         return inShuffling;
     }
@@ -259,11 +249,11 @@ namespace Logic {
         nowState = 0;
         allState = 0;
         solvingStart = 0;
-        answer = NULL;
+        answer = nullptr;
     }
 
 
-    void solve() {
+    void solve(bool ifSelect) {
         for (int i = 0;i<67;i++)
             stateStr[i] = ' ';
         setColor (0,'U');
@@ -284,7 +274,6 @@ namespace Logic {
                     position.init(POSITION_TEMP,4);
                     Matrix target = position * matrix;
                     Matrix ret = colorMatrix * matrix;
-//left : x , right : z
                     getColorState(target[0][0] + 1,target[0][1] + 1,target[0][2] + 1)->init(ret);
                 }
         setColor(getAnswer(getColorState(1,2,1)->getUp()),getAnswer(0));
@@ -293,15 +282,6 @@ namespace Logic {
         setColor(getAnswer(getColorState(1,1,2)->getRight()),getAnswer(3));
         setColor(getAnswer(getColorState(0,1,1)->getFront()),getAnswer(4));
         setColor(getAnswer(getColorState(2,1,1)->getBack()),getAnswer(5));
-//        setColor(0,getColorState(1,2,1)->getUp());
-//        setColor(1,getColorState(1,0,1)->getDown());
-//        setColor(2,getColorState(1,1,0)->getLeft());
-//        setColor(3,getColorState(1,1,2)->getRight());
-//        setColor(4,getColorState(0,1,1)->getFront());
-//        setColor(5,getColorState(2,1,1)->getBack());
-//        for (int i = 0;i<6;i++)
-//            cout<<getColor(i)<<" ";
-//        cout<<endl;
         for (int i = 0;i<3;i++)
             for (int j = 0;j<3;j++)
                 for (int k = 0;k<3;k++) {
@@ -313,20 +293,8 @@ namespace Logic {
                     Matrix position(1,4);
                     position.init(POSITION_TEMP,4);
                     Matrix target = position * matrix;
-//                    cout<<"====="<<endl;
-//                    matrix.print();
                     Matrix ret = colorMatrix * matrix;
-//                    if (IntRow(new int[3]{-1,-1,-1},3) == target[0]) {
-//                        cout<<i<<' '<<j<<' '<<k<<endl;
-//                    }
-
-//left : x , right : z
                     getColorState(target[0][0] + 1,target[0][1] + 1,target[0][2] + 1)->init(ret);
-//                    states[i+j*3+k*9].print();
-//                    if (i == 0 && j== 1 && k == 2) {
-//                        matrix.print();
-//                        ret.print();
-//                    }
                 }
         stateStr[0] = getColorState(0,2,1)->getUp();
         stateStr[1] = getColorState(0,2,1)->getFront();
@@ -390,11 +358,9 @@ namespace Logic {
         stateStr[64] = getColorState(2,0,2)->getDown();
         stateStr[65] = getColorState(2,0,2)->getBack();
         stateStr[66] = getColorState(2,0,2)->getRight();
-//        cout <<stateStr<<endl;
-//        for (int i = 0 ;i<6;i++)
         mode = -1;
         inSelecting = true;
-        cout<<"Please press relative numbers to select one mode"<<endl;
+        if (ifSelect)cout<<"Please press relative numbers to select one mode"<<endl;
 
     }
 
@@ -409,17 +375,18 @@ namespace Logic {
     }
 
     void shuffle() {
-        srand(time(NULL));
-        step = random(50,100);
+        srand(time(nullptr));
+        step = random(10,20);
         nowStep = 0;
         lastType = -1;
         inShuffling = true;
+
     }
 
     void initLogicLayer() {
         if (initialize)
             return;
-        _finddata_t fileInfo;
+        _finddata_t fileInfo{};
         intptr_t headerFile = 0;
         string path = "solvers";
         int cnt = 0;
