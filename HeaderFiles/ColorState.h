@@ -1,7 +1,3 @@
-//
-// Created by 周蜀杰 on 2020/12/16.
-//
-
 #ifndef __ColorSTATE_H
 #define __ColorSTATE_H
 

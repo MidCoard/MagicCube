@@ -1,7 +1,3 @@
-//
-// Created by 周蜀杰 on 2020/12/16.
-//
-
 #ifndef TEST_MATRIX_H
 #define TEST_MATRIX_H
 

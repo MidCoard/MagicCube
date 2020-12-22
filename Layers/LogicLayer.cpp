@@ -150,8 +150,9 @@ namespace Logic {
                 execStep(type);
                 nowStep++;
                 lastType = type;
-                if (nowStep == step)
+                if (nowStep == step) {
                     inShuffling = false;
+                }
             }
         }
     }
@@ -365,7 +366,7 @@ namespace Logic {
     }
 
     void saveState() {
-        FILE*file = fopen("MagicCube.state","wb");
+        FILE*file = fopen("save/MagicCube.state","wb");
         for (int i = 0 ;i<3;i++)
             for (int j = 0;j<3;j++)
                 for (int k = 0;k<3;k++)

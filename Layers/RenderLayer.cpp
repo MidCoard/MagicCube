@@ -4,7 +4,7 @@
 #include "GLWindows.h"
 #include "Camera.h"
 #include "SetVertices.h"
-#include "Text.h"
+#include "Image.h"
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1080
@@ -110,12 +110,12 @@ namespace Render {
     vec3 rotationVector;
     mutex cubeMutex;
 
-    GLuint MagicCubeVAO,MagicCubeVBO;
+    GLuint MagicCubeVAO, MagicCubeVBO;
     GLuint ColorVBO;
 //////////////////////////////////////////////////////////////////////////////////////light
 //绘制光源使用，本程序不需要绘制出光源，故保留不用
     Shader *lightShader;
-    GLuint lightVAO,lightVBO;
+    GLuint lightVAO, lightVBO;
     GLuint normalVBO;
     vec3 lightPosition = CAMERA_POSITION;
     mat4 lightModel = mat4(1.0f);
@@ -123,21 +123,21 @@ namespace Render {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-    mat4 * getCubeState(int x,int y,int z) {
-        return &allCubesState[x * 9 + y * 3  + z];
+    mat4 *getCubeState(int x, int y, int z) {
+        return &allCubesState[x * 9 + y * 3 + z];
     }
 
     void resetStates() {
-        for(int i=0;i<NUM_CUBES;i++){
+        for (int i = 0; i < NUM_CUBES; i++) {
             Render::allCubesState[i] = mat4(1.0f);
         }
     }
 
-    void initRenderLayer(char* state) {
+    void initRenderLayer(char *state) {
         if (initialize)
             return;
 
-        mainWindow = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, (char*)WINDOW_TITLE);
+        mainWindow = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, (char *) WINDOW_TITLE);
         cubeShader = new Shader("Shaders/MagicCube.vs", "Shaders/MagicCube.fs");
         lightShader = new Shader("Shaders/Light.vs", "Shaders/Light.fs");
         camera = new Camera(CAMERA_POSITION);
@@ -146,7 +146,7 @@ namespace Render {
         view = camera->getViewMatrix();
 
         setWorldSpace();
-        setColors(logicColors[0],logicColors[1],logicColors[2],logicColors[3],logicColors[4],logicColors[5]);
+        setColors(logicColors[0], logicColors[1], logicColors[2], logicColors[3], logicColors[4], logicColors[5]);
 
         glfwSetFramebufferSizeCallback(mainWindow->getWindow(), frameBufferSizeCallback);
         glfwSetCursorPosCallback(mainWindow->getWindow(), mouseCallback);
@@ -155,6 +155,7 @@ namespace Render {
         setCubeMatrix();
         initImage();
 
+        glEnable(GL_MULTISAMPLE);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_ALPHA_TEST);
         glEnable(GL_BLEND);
@@ -163,7 +164,7 @@ namespace Render {
         glGenVertexArrays(1, &MagicCubeVAO);
 
         glGenVertexArrays(1, &lightVAO);
-        glGenBuffers(1,&lightVBO);
+        glGenBuffers(1, &lightVBO);
 
         attribPointer();
 
@@ -173,11 +174,11 @@ namespace Render {
         if (!check.empty()) {
             FILE *file = fopen(state, "rb");
             if (file == nullptr) {
-                cout<<"Cannot open "<<state<<endl;
-                cout<<"Use default states"<<endl;
+                cout << "Cannot open " << state << endl;
+                cout << "Use default states" << endl;
             } else {
                 fileSuccess = true;
-                cout<<"Find valid states"<<endl;
+                cout << "Find valid states" << endl;
                 for (int i = 0; i < 3; i++)
                     for (int j = 0; j < 3; j++)
                         for (int k = 0; k < 3; k++)
@@ -188,47 +189,49 @@ namespace Render {
         initialize = true;
     }
 
-    void StartMenu(){
-        projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
-        view = lookAt(vec3(0.0f,0.0f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+    void StartMenu() {
+        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        view = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         float alpha = abs(sin(glfwGetTime()));
-        renderImage(vec3(0, 2, 0), 3.3f, 1.1f, 1.0f, view, projection, (char *) "C:/Users/Ken/DeskTop/images/Title.png");
+        renderImage(vec3(0, 2, 0), 3.3f, 1.1f, 1.0f, view, projection, (char *) "images/Title.png");
         renderImage(vec3(0, 0.2, 0), 2.79f, 0.93f, alpha, view, projection,
-                    (char *) "C:/Users/Ken/DeskTop/images/Start.png");
-        renderImage(vec3(0, -2, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "C:/Users/Ken/DeskTop/images/Help.png");
-        renderImage(vec3(0, -3, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "C:/Users/Ken/DeskTop/images/Developer.png");
-        if(fileSuccess)renderImage(vec3(-3, -3.8, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "C:/Users/Ken/DeskTop/images/SaveSucceed.png");
-        if(!fileSuccess)renderImage(vec3(-3, -3.8, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "C:/Users/Ken/DeskTop/images/SaveFail.png");
+                    (char *) "images/Start.png");
+        renderImage(vec3(0, -2, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/Help.png");
+        renderImage(vec3(0, -3, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/Developer.png");
+        if (fileSuccess)
+            renderImage(vec3(-3, -3.8, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/SaveSucceed.png");
+        if (!fileSuccess)
+            renderImage(vec3(-3, -3.8, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/SaveFail.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     };
 
-    void Pause(){
-        projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
-        view = lookAt(vec3(0.0f,0.0f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+    void Pause() {
+        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        view = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderImage(vec3(0, 0.5, 0), 3.0f, 1.0f, 1.0f, view, projection,
-                    (char *) "C:/Users/Ken/DeskTop/images/Pause.png");
-        renderImage(vec3(0, -1, 0), 2.4f, 0.8f, 1.0f, view, projection, (char *) "C:/Users/Ken/DeskTop/images/Help.png");
-        renderImage(vec3(0, -1.5, 0), 2.4f, 0.8f, 1.0f, view, projection, (char *) "C:/Users/Ken/DeskTop/images/BackToTitle.png");
+        renderImage(vec3(0, 1, 0), 4.5f, 1.5f, 1.0f, view, projection,
+                    (char *) "images/Pause.png");
+        renderImage(vec3(0, -1, 0), 2.4f, 0.8f, 1.0f, view, projection, (char *) "images/Help.png");
+        renderImage(vec3(0, -2, 0), 2.1f, 0.7f, 1.0f, view, projection, (char *) "images/BackToTitle.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     }
 
-    void Help(){
-        projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
-        view = lookAt(vec3(0.0f,0.0f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+    void Help() {
+        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        view = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        if(ifHelp){
+        if (ifHelp) {
             renderImage(vec3(0, 0, 0), 4.2f, 4.2f, 1.0f, view, projection,
-                        (char *) "C:/Users/Ken/DeskTop/images/HelpContent.png");
-        }else if(ifDeveloper){
+                        (char *) "images/HelpContent.png");
+        } else if (ifDeveloper) {
             renderImage(vec3(0, 0, 0), 4.2f, 4.2f, 1.0f, view, projection,
-                        (char *) "C:/Users/Ken/DeskTop/images/DeveloperInfo.png");
+                        (char *) "images/DeveloperInfo.png");
         }
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
@@ -278,9 +281,9 @@ namespace Render {
 
         cubeShader->setVec3("lightColor", lightColor);
 
-        cubeShader->setVec3("lightPos",lightPosition);
+        cubeShader->setVec3("lightPos", lightPosition);
 
-        cubeShader->setVec3("viewPos",camera->Position);
+        cubeShader->setVec3("viewPos", camera->Position);
     }
 
     bool ignoreKeyboardInput = false;
@@ -297,14 +300,16 @@ namespace Render {
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if(Logic::isInShuffling()){
-            for(int i=0;i<Logic::getNowStep()+1;i++){
-                renderImage(vec3(-1.5+(3.0/Logic::getStep())*i,-2,2.5),0.05f,0.1f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/ProcessBar.png");
+        if (Logic::isInShuffling()) {
+            for (int i = 0; i < Logic::getNowStep() + 1; i++) {
+                renderImage(vec3(-1.5 + (3.0 / Logic::getStep()) * i, -2, 2.5), 0.05f, 0.1f, 1.0f, view, projection,
+                            (char *) "images/ProcessBar.png");
             }
         }
-        if(Logic::inSolving){
-            for(int i=Logic::getAllState()-Logic::getNowState()+2;i>0;i--){
-                renderImage(vec3(-1.5+(3.0/Logic::getAllState())*i,-2,2.5),0.03f,0.1f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/images/ProcessBar.png");
+        if (Logic::inSolving) {
+            for (int i = Logic::getAllState() - Logic::getNowState() + 2; i > 0; i--) {
+                renderImage(vec3(-1.5 + (3.0 / Logic::getAllState()) * i, -2, 2.5), 0.03f, 0.1f, 1.0f, view, projection,
+                            (char *) "images/ProcessBar.png");
             }
         }//进度条
 
@@ -557,7 +562,7 @@ namespace Render {
                 }
 #endif
                 if (Logic::isSolved() && !Logic::isInShuffling()) {
-                    cout<<"Solved it!"<<endl;
+                    cout << "Solved it!" << endl;
                 }
                 break;
             }
@@ -569,11 +574,11 @@ namespace Render {
     void clear() {
         glDeleteVertexArrays(1, &MagicCubeVAO);
         glDeleteBuffers(1, &MagicCubeVBO);
-        glDeleteBuffers(1,&ColorVBO);
-        glDeleteVertexArrays(1,&lightVAO);
-        glDeleteBuffers(1,&lightVBO);
-        glDeleteVertexArrays(1,&imageVAO);
-        glDeleteBuffers(1,&imageVBO);
+        glDeleteBuffers(1, &ColorVBO);
+        glDeleteVertexArrays(1, &lightVAO);
+        glDeleteBuffers(1, &lightVBO);
+        glDeleteVertexArrays(1, &imageVAO);
+        glDeleteBuffers(1, &imageVBO);
         glfwTerminate();
     }
 
@@ -583,7 +588,6 @@ namespace Render {
     bool firstMouse = true;
 
     void mouseCallback(GLFWwindow *window, double xCoordinate, double yCoordinate) {
-        if(ifPause || ifHelp) return;
         if (firstMouse) {
             lastX = xCoordinate;
             lastY = yCoordinate;
@@ -593,10 +597,13 @@ namespace Render {
         float xOffset = xCoordinate - lastX;
         float yOffset = lastY - yCoordinate;
 
-        lastX = xCoordinate;
-        lastY = yCoordinate;
-
-        camera->processMouseMovement(xOffset, yOffset);
+            lastX = xCoordinate;
+            lastY = yCoordinate;
+        if (!(ifPause || ifHelp || !StartGameLoop)) {
+            camera->processMouseMovement(xOffset, yOffset);
+        }else{
+            camera->processMouseMovement(0, 0);
+        }
     }
 
     void scrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
