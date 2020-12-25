@@ -1,44 +1,7 @@
-#ifndef MAGICCUBE_TEXT_H
-#define MAGICCUBE_TEXT_H
-
-#include <iostream>
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <stb_image.h>
-
-#include "Shader.h"
-
-using namespace glm;
-
-Shader *imageShader;
-GLuint imageVAO, imageVBO, textureVBO;
-GLuint texture;
-
-
-vec3 imageVertices[] = {
-        vec3(-1.0f, 1.0f, 0.0f),
-        vec3(1.0f, 1.0f, 0.0f),
-        vec3(1.0f, -1.0f, 0.0f),
-        vec3(1.0f, -1.0f, 0.0f),
-        vec3(-1.0f, 1.0f, 0.0f),
-        vec3(-1.0f, -1.0f, 0.0f)
-};
-
-vec2 textureVertices[] = {
-        vec2(0.0f,1.0f),
-        vec2(1.0f,1.0f),
-        vec2(1.0f,0.0f),
-        vec2(1.0f,0.0f),
-        vec2(0.0f,1.0f),
-        vec2(0.0f,0.0f)
-};
+#include "Image.h"
 
 void initImage() {
-    imageShader = new Shader("Shaders/Image.vs", "Shaders/Image.fs");
+    imageShader = new Shader("shaders/Image.vs", "shaders/Image.fs");
 
     glGenVertexArrays(1, &imageVAO);
     glBindVertexArray(imageVAO);
@@ -63,8 +26,7 @@ void initImage() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    auto *borderColor = const_cast<float *>(WindowColor);
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);//绑定纹理
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, WINDOW_COLOR.getAsList());//绑定纹理
 }
 
 void renderImage(vec3 position, float scaleX, float scaleY, float alpha, mat4 view, mat4 projection, char* imagePath) {
@@ -96,5 +58,3 @@ void renderImage(vec3 position, float scaleX, float scaleY, float alpha, mat4 vi
     glDrawArrays(GL_TRIANGLES,0,6);
     glBindVertexArray(0);
 }
-
-#endif

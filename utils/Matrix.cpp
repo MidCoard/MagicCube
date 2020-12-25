@@ -1,12 +1,4 @@
-//
-// Created by 周蜀杰 on 2020/12/16.
-//
-
 #include "Matrix.h"
-#include<iostream>
-
-using namespace std;
-
 
 Matrix::Matrix(int n, int m) {
     this->n = n;
@@ -39,9 +31,8 @@ void Matrix::init(int *num, int count) {
 
 Matrix const Matrix::operator*(Matrix matrix) {
     Matrix ret(this->n,matrix.m);
-    if (this->m != matrix.n) {
+    if (this->m != matrix.n)
         return ret;
-    }
     for (int i = 0;i<n;i++)
         for (int j = 0;j<m;j++)
             for (int k = 0;k<matrix.m;k++)

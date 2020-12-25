@@ -1,8 +1,10 @@
-#ifndef TEST_MATRIX_H
-#define TEST_MATRIX_H
+#ifndef MAGICCUBE_MATRIX_H
+#define MAGICCUBE_MATRIX_H
 
 #include "glm/glm.hpp"
+#include <iostream>
 
+using namespace std;
 using namespace glm;
 
 class IntRow {
@@ -29,10 +31,6 @@ public:
 
     void set(int,int);
 };
-
-int directionsData[6][3] = {{0,-1,0},{0,1,0},{0,0,1},{0,0,-1},{1,0,0},{-1,0,0}};
-
-IntRow directions[] = {IntRow(directionsData[0],3),IntRow(directionsData[1],3),IntRow(directionsData[2],3),IntRow(directionsData[3],3),IntRow(directionsData[4],3),IntRow(directionsData[5],3)};
 
 class Matrix {
 private:
@@ -67,6 +65,9 @@ public:
     void print();
 };
 
+int directionsData[6][3] = {{0,-1,0},{0,1,0},{0,0,1},{0,0,-1},{1,0,0},{-1,0,0}};
+
+IntRow directions[] = {IntRow(directionsData[0],3),IntRow(directionsData[1],3),IntRow(directionsData[2],3),IntRow(directionsData[3],3),IntRow(directionsData[4],3),IntRow(directionsData[5],3)};
 
 
-#endif //TEST_MATRIX_H
+#endif

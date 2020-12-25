@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
 project(MagicCube)
-project(test)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -8,14 +7,10 @@ MATH(EXPR stack_size "1024*1024*1024")
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--stack,${stack_size}")
 set(SOURCE_FILES MagicCubeLauncher.cpp)
 
-set(TEST_FILES test/test1.cpp)
-
 include_directories(include)
-include_directories(HeaderFiles)
+include_directories(utils)
 include_directories(${PROJECT_SOURCE_DIR})
 #add_library(glfw SHARED IMPORTED)
-add_executable(test ${TEST_FILES} glad.c)
 add_executable(MagicCube ${SOURCE_FILES} glad.c include/stb_image.cpp)
 target_link_libraries(MagicCube ${PROJECT_SOURCE_DIR}/lib/glfw3.dll)
-target_link_libraries(test ${PROJECT_SOURCE_DIR}/lib/glfw3.dll)
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")

@@ -1,8 +1,7 @@
-#ifndef __ColorSTATE_H
-#define __ColorSTATE_H
+#ifndef MAGICCUBE_COLOR_STATE_H
+#define MAGICCUBE_COLOR_STATE_H
 
 #include "Matrix.h"
-
 
 class ColorState {
 private:
@@ -24,5 +23,5 @@ public:
 
 char getColor(int);
 
-
-#endif //TEST_charSTATE_H
+void setColor(int pos,char color);
+#endif

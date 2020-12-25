@@ -1,15 +1,14 @@
-#include "LogicLayer.h"
-#include "RenderLayer.h"
-#include "Matrix.cpp"
-#include "ColorState.cpp"
-#include "vector"
-#include "iostream"
+#include <io.h>
+#include <vector>
+#include <iostream>
 #include <ctime>
 #include <Shader.h>
 #include <algorithm>
-#include "io.h"
+#include "LogicLayer.h"
+#include "RenderLayer.h"
+#include "Matrix.h"
+#include "ColorState.h"
 #include "util.h"
-#include "solvers/Solvers.h"
 
 using namespace std;
 
@@ -22,7 +21,7 @@ namespace Logic {
                                    1,0,0,5,//F
                                    -1,0,0,6};//B
 
-    vector<ColorState> states(27,ColorState('U','D','L','R','F','B'));
+    vector<ColorState> colorStates(27,ColorState('U','D','L','R','F','B'));
 
     Matrix colorMatrix(6,4);
 
@@ -38,9 +37,9 @@ namespace Logic {
 
     int nowState = 0;
 
-    int allState = 0;
+    int states = 0;
 
-    int step = 0;
+    int steps = 0;
 
     int lastType = -1;
 
@@ -122,18 +121,17 @@ namespace Logic {
                     answer = solve0(mode,stateStr);
                 }
                 nowState = 1;
-                allState = answer[0];
+                states = answer[0];
                 inSolving = true;
                 inSelecting = false;
             }
         }
         else if (inSolving) {
-            if (!Render::isIgnoreKeyboardInput() && isStartGameLoop() && !inShuffling) {
-                if (nowState == 1) {
+            if (!Render::isIgnoreKeyboardInput() && Render::isStartGameLoop() && !inShuffling) {
+                if (nowState == 1)
                     solvingStart = glfwGetTime();
-                }
-                if (nowState > allState) {
-                    cout<<"All steps: "<< allState<<endl;
+                if (nowState > states) {
+                    cout<<"All steps: "<< states<<endl;
                     cout<<"Totally spend time: "<< (glfwGetTime() - solvingStart)<<"s"<<endl;
                     inSolving = false;
                     return;
@@ -141,23 +139,21 @@ namespace Logic {
                 execStep(answer[nowState++]);
             }
         } else if (inShuffling) {
-            if (!Render::isIgnoreKeyboardInput() && isStartGameLoop() && !inSolving) {
+            if (!Render::isIgnoreKeyboardInput() && Render::isStartGameLoop() && !inSolving) {
                 srand(time(nullptr));
                 int type = random(0, 5);
-                while (type == lastType) {
+                while (type == lastType)
                     type = random(0, 5);
-                }
                 execStep(type);
                 nowStep++;
                 lastType = type;
-                if (nowStep == step) {
+                if (nowStep == steps)
                     inShuffling = false;
-                }
             }
         }
     }
-    int getAllState(){
-        return allState;
+    int getStates(){
+        return states;
     }
     int getNowState(){
         return nowState;
@@ -165,12 +161,12 @@ namespace Logic {
     int getNowStep(){
         return nowStep;
     }
-    int getStep(){
-        return step;
+    int getSteps(){
+        return steps;
     }
 
     static ColorState*getColorState(int x,int y,int z) {
-        return &states[x + y * 3 + z * 9 ];
+        return &colorStates[x + y * 3 + z * 9 ];
     }
 
     int POSITION_TEMP[4];
@@ -203,10 +199,9 @@ namespace Logic {
         char front = getColorState(0,1,1)->getFront();
         char back = getColorState(2,1,1)->getBack();
         for (int x = 0;x<3;x++)
-            for (int z = 0;z<3;z++) {
+            for (int z = 0;z<3;z++)
                 if (getColorState(x, 2, z)->getUp() != up)
                     return false;
-            }
         for (int x = 0;x<3;x++)
             for (int z = 0;z<3;z++)
                 if (getColorState(x,0,z)->getDown() != down)
@@ -244,17 +239,17 @@ namespace Logic {
         inSolving = false;
         inSelecting = false;
         mode = -1;
-        step = 0;
+        steps = 0;
         nowStep = 0;
         lastType = -1;
         nowState = 0;
-        allState = 0;
+        states = 0;
         solvingStart = 0;
         answer = nullptr;
     }
 
 
-    void solve(bool ifSelect) {
+    void solve(bool isSelect) {
         for (int i = 0;i<67;i++)
             stateStr[i] = ' ';
         setColor (0,'U');
@@ -361,23 +356,23 @@ namespace Logic {
         stateStr[66] = getColorState(2,0,2)->getRight();
         mode = -1;
         inSelecting = true;
-        if (ifSelect)cout<<"Please press relative numbers to select one mode"<<endl;
+        if (isSelect)cout<<"Please press relative numbers to select one mode"<<endl;
 
     }
 
-    void saveState() {
+    void saveStates() {
         FILE*file = fopen("save/MagicCube.state","wb");
         for (int i = 0 ;i<3;i++)
             for (int j = 0;j<3;j++)
                 for (int k = 0;k<3;k++)
                     fwrite( Render::getCubeState(i, j, k), sizeof(mat4), 1, file);
         fclose(file);
-        cout<<"Magic Cube states have been saved as 'MagicCube.state'"<<endl;
+        cout<<"Magic Cube colorStates have been saved as 'MagicCube.state'"<<endl;
     }
 
     void shuffle() {
         srand(time(nullptr));
-        step = random(10,20);
+        steps = random(10,20);
         nowStep = 0;
         lastType = -1;
         inShuffling = true;

@@ -1,7 +1,4 @@
 #include "ColorState.h"
-#include "iostream"
-
-using namespace std;
 
 ColorState::ColorState(char up, char down, char left, char right, char front, char back):up(up),down(down),left(left),right(right),front(front),back(back) {
 }
