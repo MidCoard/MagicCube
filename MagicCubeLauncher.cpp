@@ -1,12 +1,11 @@
-#include <cstdio>
-#include "LayerBridge.cpp"
+#include "Layers/LayerBridge.cpp"
 #include "util.h"
 
 using namespace std;
 
-void initialize() {
+void initialize(char* state) {
     Logic::initLogicLayer();
-    Render::initRenderLayer();
+    Render::initRenderLayer(state);
 }
 
 void sync(double loopStartTime) {
@@ -21,14 +20,16 @@ bool isInitialize() {
     return Logic::isInitialize() && Render::isInitialize();
 }
 
-int main() {
-    initialize();
+int main(int argc, char *argv[]) {
+    if (argc > 1)
+        initialize(argv[1]);
+    else initialize((char*)"");
     if (isInitialize()) {
         double secsPerUpdate = 1.0 / 100.0;
         double previous = getTime();
         double steps = 0.0;
         double last = 0;
-        while (!glfwWindowShouldClose(Render::getWindow()->getWindow())) {
+        while (!glfwWindowShouldClose(Render::getGLWindow()->getWindow())) {
             double loopStartTime = getTime();
             double elapsed = loopStartTime - previous;
             previous = loopStartTime;

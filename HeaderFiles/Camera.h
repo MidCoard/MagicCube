@@ -21,8 +21,6 @@ const vec3 CAMERA_POSITION = vec3(3.0f, 5.0f, 8.0f);//初始相机位置
 vec3 YAxis = vec3(0.0f, 1.0f, 0.0f);
 vec3 XAxis = -normalize(cross(vec3(CAMERA_POSITION),YAxis));//使用欧拉角旋转时的旋转轴 会随视角改变
 
-unsigned int zeroMouseMovementCount=0;
-
 class Camera {
 public:
 
@@ -60,6 +58,7 @@ public:
         xoffset *= MouseSensitivity;
         yoffset *= MouseSensitivity;
 
+        Front = normalize(Position);
         Up = cross(Front,Right);
 
         mat4 transx = mat4(1.0f);
@@ -70,7 +69,7 @@ public:
         transy = rotate(transy, radians(yoffset), XAxis);
         Position = vec3(transy * transx * vec4(Position, 1.0f));
 
-        if (((Position.x >= -1.7f) && (Position.x <= 1.7f)) && (lastPosition.z * Position.z <= 0)) {
+        if (((Position.x >= -1.5f) && (Position.x <= 1.5f)) && (lastPosition.z * Position.z <= 0)) {
             ifInverseUp = !ifInverseUp;
         }
 

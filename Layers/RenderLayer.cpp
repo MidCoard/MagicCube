@@ -1,13 +1,10 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <mutex>
 
 #include "Shader.h"
 #include "GLWindows.h"
 #include "Camera.h"
 #include "SetVertices.h"
-#include "Text.h"
-#include "RenderLayer.h"
+#include "Image.h"
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1080
@@ -58,6 +55,9 @@ enum ROTATE_FLAG {
 bool StartGameLoop = false;
 bool ifPause = false;
 bool ifHelp = false;
+bool ifDeveloper = false;
+bool ifBackToTitle = false;
+bool fileSuccess = false;
 
 bool isStartGameLoop() {
     return StartGameLoop;
@@ -81,7 +81,7 @@ namespace Render {
 
     Camera *camera;
 
-    void StartMenu();
+    void startMenu();
 
     void attribPointer();
 
@@ -104,18 +104,18 @@ namespace Render {
     vector<mat4> allCubesState(NUM_CUBES, mat4(1.0f));
     const mat4 identityMatrix = mat4(1.0f);//单位矩阵
 
-    const double rotateVelocity = 4.0;
+    const float rotateVelocity = 4.0f;
     float angle = 0.0;
     float targetAngle = 90.0;
     vec3 rotationVector;
     mutex cubeMutex;
 
-    GLuint MagicCubeVAO,MagicCubeVBO;
+    GLuint MagicCubeVAO, MagicCubeVBO;
     GLuint ColorVBO;
 //////////////////////////////////////////////////////////////////////////////////////light
-
+//绘制光源使用，本程序不需要绘制出光源，故保留不用
     Shader *lightShader;
-    GLuint lightVAO,lightVBO;
+    GLuint lightVAO, lightVBO;
     GLuint normalVBO;
     vec3 lightPosition = CAMERA_POSITION;
     mat4 lightModel = mat4(1.0f);
@@ -123,16 +123,21 @@ namespace Render {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-    mat4 getCubeState(int x,int y,int z) {
-        return allCubesState[x * 9 + y * 3 + z];
+    mat4 *getCubeState(int x, int y, int z) {
+        return &allCubesState[x * 9 + y * 3 + z];
     }
 
+    void resetStates() {
+        for (int i = 0; i < NUM_CUBES; i++) {
+            Render::allCubesState[i] = mat4(1.0f);
+        }
+    }
 
-    void initRenderLayer() {
+    void initRenderLayer(char *state) {
         if (initialize)
             return;
 
-        mainWindow = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
+        mainWindow = new GLWindow(WINDOW_WIDTH, WINDOW_HEIGHT, (char *) WINDOW_TITLE);
         cubeShader = new Shader("Shaders/MagicCube.vs", "Shaders/MagicCube.fs");
         lightShader = new Shader("Shaders/Light.vs", "Shaders/Light.fs");
         camera = new Camera(CAMERA_POSITION);
@@ -141,14 +146,16 @@ namespace Render {
         view = camera->getViewMatrix();
 
         setWorldSpace();
-        setColors(logicColors[0],logicColors[1],logicColors[2],logicColors[3],logicColors[4],logicColors[5]);
+        setColors(logicColors[0], logicColors[1], logicColors[2], logicColors[3], logicColors[4], logicColors[5]);
 
         glfwSetFramebufferSizeCallback(mainWindow->getWindow(), frameBufferSizeCallback);
         glfwSetCursorPosCallback(mainWindow->getWindow(), mouseCallback);
         glfwSetScrollCallback(mainWindow->getWindow(), scrollCallback);
 
-        initText();
+        setCubeMatrix();
+        initImage();
 
+        glEnable(GL_MULTISAMPLE);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_ALPHA_TEST);
         glEnable(GL_BLEND);
@@ -157,46 +164,75 @@ namespace Render {
         glGenVertexArrays(1, &MagicCubeVAO);
 
         glGenVertexArrays(1, &lightVAO);
-        glGenBuffers(1,&lightVBO);
+        glGenBuffers(1, &lightVBO);
 
         attribPointer();
 
         lightModel = translate(lightModel, lightPosition);
         lightModel = scale(lightModel, vec3(0.2f));
-
+        string check(state);
+        if (!check.empty()) {
+            FILE *file = fopen(state, "rb");
+            if (file == nullptr) {
+                cout << "Cannot open " << state << endl;
+                cout << "Use default states" << endl;
+            } else {
+                fileSuccess = true;
+                cout << "Find valid states" << endl;
+                for (int i = 0; i < 3; i++)
+                    for (int j = 0; j < 3; j++)
+                        for (int k = 0; k < 3; k++)
+                            fread(Render::getCubeState(i, j, k), sizeof(mat4), 1, file);
+                fclose(file);
+            }
+        }
         initialize = true;
     }
 
-    void StartMenu(){
-        projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
-        view = lookAt(vec3(0.0f,0.0f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+    void startMenu() {
+        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        view = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         float alpha = abs(sin(glfwGetTime()));
-        renderText(vec3(0,2,0),1.1f,1.1f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Title.png");
-        renderText(vec3(0,0.2,0),0.93f,0.93f,alpha,view,projection,(char*)"C:/Users/Ken/DeskTop/Start.png");
-        renderText(vec3(0,-2,0),0.6f,0.6f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Help.png");
+        renderImage(vec3(0, 2, 0), 3.3f, 1.1f, 1.0f, view, projection, (char *) "images/Title.png");
+        renderImage(vec3(0, 0.2, 0), 2.79f, 0.93f, alpha, view, projection,
+                    (char *) "images/Start.png");
+        renderImage(vec3(0, -2, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/help.png");
+        renderImage(vec3(0, -3, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/Developer.png");
+        if (fileSuccess)
+            renderImage(vec3(-3, -3.8, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/SaveSucceed.png");
+        if (!fileSuccess)
+            renderImage(vec3(-3, -3.8, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/SaveFail.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     };
 
-    void Pause(){
-        projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
-        view = lookAt(vec3(0.0f,0.5f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+    void pause() {
+        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        view = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderText(vec3(0,0.5,0),1.0f,1.0f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Pause.png");
-        renderText(vec3(0,-1,0),0.8f,0.8f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/Help.png");
+        renderImage(vec3(0, 1, 0), 4.5f, 1.5f, 1.0f, view, projection,
+                    (char *) "images/pause.png");
+        renderImage(vec3(0, -1, 0), 2.4f, 0.8f, 1.0f, view, projection, (char *) "images/help.png");
+        renderImage(vec3(0, -2, 0), 2.1f, 0.7f, 1.0f, view, projection, (char *) "images/BackToTitle.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     }
 
-    void Help(){
-        projection = perspective(radians(camera->Zoom), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
-        view = lookAt(vec3(0.0f,0.5f,10.0f), vec3(0, 0, 0), camera->WorldUp);
+    void help() {
+        projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        view = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderText(vec3(0,-1,0),1.4f,4.2f,1.0f,view,projection,(char*)"C:/Users/Ken/DeskTop/HelpContent.png");
+        if (ifHelp) {
+            renderImage(vec3(0, 0, 0), 4.2f, 4.2f, 1.0f, view, projection,
+                        (char *) "images/HelpContent.png");
+        } else if (ifDeveloper) {
+            renderImage(vec3(0, 0, 0), 4.2f, 4.2f, 1.0f, view, projection,
+                        (char *) "images/DeveloperInfo.png");
+        }
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     }
@@ -245,25 +281,9 @@ namespace Render {
 
         cubeShader->setVec3("lightColor", lightColor);
 
-        cubeShader->setVec3("lightPos",lightPosition);
+        cubeShader->setVec3("lightPos", lightPosition);
 
-        cubeShader->setVec3("viewPos",camera->Position);
-    }
-
-    void setLightMatrix(){
-        view = camera->getViewMatrix();
-
-        lightShader->setMat4("transform", transformMatrix);
-
-        lightShader->setMat4("lightModel",lightModel);
-
-        lightShader->setMat4("view", view);
-
-        lightShader->setMat4("projection", projection);
-
-        lightShader->setVec3("lightColor", lightColor);
-
-        lightShader->setVec3("lightPos",lightPosition);
+        cubeShader->setVec3("viewPos", camera->Position);
     }
 
     bool ignoreKeyboardInput = false;
@@ -280,10 +300,18 @@ namespace Render {
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//        lightShader->use();
-//        setLightMatrix();
-//        glBindVertexArray(lightVAO);
-//        glDrawArrays(GL_TRIANGLES, NO_JUMP, NUM_TRIANGLES);//绘制光源
+        if (Logic::isInShuffling()) {
+            for (int i = 0; i < Logic::getNowStep() + 1; i++) {
+                renderImage(vec3(-1.5 + (3.0 / Logic::getStep()) * i, -2, 2.5), 0.05f, 0.1f, 1.0f, view, projection,
+                            (char *) "images/ProcessBar.png");
+            }
+        }
+        if (Logic::inSolving) {
+            for (int i = Logic::getAllState() - Logic::getNowState() + 2; i > 0; i--) {
+                renderImage(vec3(-1.5 + (3.0 / Logic::getAllState()) * i, -2, 2.5), 0.03f, 0.1f, 1.0f, view, projection,
+                            (char *) "images/ProcessBar.png");
+            }
+        }//进度条
 
         cubeShader->use();
         setCubeMatrix();
@@ -469,8 +497,6 @@ namespace Render {
                         if (X_1) {
                             mat4 thisTime = rotate(identityMatrix, radians(targetAngle), standardXAxis);
                             allCubesState[i] = thisTime * allCubesState[i];
-//                            mat4 transyaxis = rotate(mat4(1.0f),radians(-targetAngle),standardXAxis);
-//                            yaxis[i] = vec3(transyaxis * vec4(yaxis[i],1.0f));
                         }
                     } else if (rotateFlag == ROTATE_X_2) {
                         if (X_2) {
@@ -526,7 +552,6 @@ namespace Render {
                 targetAngle = 0;
                 rotateFlag = NO_ROTATE;
 #ifdef DEBUG
-                system("cls");
                 for (int i = 0;i<27;i++) {
                     for (int j = 0; j < 4; j++) {
                         for (int k = 0; k < 4; k++)
@@ -536,6 +561,9 @@ namespace Render {
                     cout<< "%%%%%%%%%"<<endl;
                 }
 #endif
+                if (Logic::isSolved() && !Logic::isInShuffling()) {
+                    cout << "Solved it!" << endl;
+                }
                 break;
             }
         }
@@ -546,11 +574,11 @@ namespace Render {
     void clear() {
         glDeleteVertexArrays(1, &MagicCubeVAO);
         glDeleteBuffers(1, &MagicCubeVBO);
-        glDeleteBuffers(1,&ColorVBO);
-        glDeleteVertexArrays(1,&lightVAO);
-        glDeleteBuffers(1,&lightVBO);
-        glDeleteVertexArrays(1,&textVAO);
-        glDeleteBuffers(1,&textVBO);
+        glDeleteBuffers(1, &ColorVBO);
+        glDeleteVertexArrays(1, &lightVAO);
+        glDeleteBuffers(1, &lightVBO);
+        glDeleteVertexArrays(1, &imageVAO);
+        glDeleteBuffers(1, &imageVBO);
         glfwTerminate();
     }
 
@@ -560,7 +588,6 @@ namespace Render {
     bool firstMouse = true;
 
     void mouseCallback(GLFWwindow *window, double xCoordinate, double yCoordinate) {
-        if(ifPause || ifHelp) return;
         if (firstMouse) {
             lastX = xCoordinate;
             lastY = yCoordinate;
@@ -570,17 +597,20 @@ namespace Render {
         float xOffset = xCoordinate - lastX;
         float yOffset = lastY - yCoordinate;
 
-        lastX = xCoordinate;
-        lastY = yCoordinate;
-
-        camera->processMouseMovement(xOffset, yOffset);
+            lastX = xCoordinate;
+            lastY = yCoordinate;
+        if (!(ifPause || ifHelp || !StartGameLoop)) {
+            camera->processMouseMovement(xOffset, yOffset);
+        }else{
+            camera->processMouseMovement(0, 0);
+        }
     }
 
     void scrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
         camera->ProcessMouseScroll(yOffset);
     }
 
-    GLWindow *getWindow() {
+    GLWindow *getGLWindow() {
         return mainWindow;
     }
 
@@ -589,54 +619,72 @@ namespace Render {
     }
 
     void rotate_X_1(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_X_1;
         targetAngle = degrees;
     }
 
     void rotate_X_2(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_X_2;
         targetAngle = degrees;
     }
 
     void rotate_X_3(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_X_3;
         targetAngle = degrees;
     }
 
     void rotate_Y_1(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Y_1;
         targetAngle = degrees;
     }
 
     void rotate_Y_2(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Y_2;
         targetAngle = degrees;
     }
 
     void rotate_Y_3(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Y_3;
         targetAngle = degrees;
     }
 
     void rotate_Z_1(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Z_1;
         targetAngle = degrees;
     }
 
     void rotate_Z_2(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Z_2;
         targetAngle = degrees;
     }
 
     void rotate_Z_3(float degrees) {
+        if (degrees != 0)
+            ignoreKeyboardInput = true;
         lock_guard<mutex> l(cubeMutex);
         rotateFlag = ROTATE_Z_3;
         targetAngle = degrees;

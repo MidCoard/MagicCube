@@ -14,18 +14,18 @@
 
 using namespace glm;
 
-Shader *textShader;
-GLuint textVAO, textVBO, textEBO, textureVBO;
+Shader *imageShader;
+GLuint imageVAO, imageVBO, textureVBO;
 GLuint texture;
 
 
-vec3 textVertices[] = {
-        vec3(-3.0f, 1.0f, 0.0f),
-        vec3(3.0f, 1.0f, 0.0f),
-        vec3(3.0f, -1.0f, 0.0f),
-        vec3(3.0f, -1.0f, 0.0f),
-        vec3(-3.0f, 1.0f, 0.0f),
-        vec3(-3.0f, -1.0f, 0.0f)
+vec3 imageVertices[] = {
+        vec3(-1.0f, 1.0f, 0.0f),
+        vec3(1.0f, 1.0f, 0.0f),
+        vec3(1.0f, -1.0f, 0.0f),
+        vec3(1.0f, -1.0f, 0.0f),
+        vec3(-1.0f, 1.0f, 0.0f),
+        vec3(-1.0f, -1.0f, 0.0f)
 };
 
 vec2 textureVertices[] = {
@@ -37,15 +37,15 @@ vec2 textureVertices[] = {
         vec2(0.0f,0.0f)
 };
 
-void initText() {
-    textShader = new Shader("Shaders/Text.vs", "Shaders/Text.fs");
+void initImage() {
+    imageShader = new Shader("Shaders/Image.vs", "Shaders/Image.fs");
 
-    glGenVertexArrays(1, &textVAO);
-    glBindVertexArray(textVAO);
+    glGenVertexArrays(1, &imageVAO);
+    glBindVertexArray(imageVAO);
 
-    glGenBuffers(1, &textVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textVertices), textVertices, GL_STATIC_DRAW);
+    glGenBuffers(1, &imageVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, imageVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(imageVertices), imageVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 
@@ -64,10 +64,10 @@ void initText() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     auto *borderColor = const_cast<float *>(WindowColor);
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);//绑定纹理
 }
 
-void renderText(vec3 position, float scaleX, float scaleY, float Alpha, mat4 view, mat4 projection, char* imagePath) {
+void renderImage(vec3 position, float scaleX, float scaleY, float alpha, mat4 view, mat4 projection, char* imagePath) {
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(imagePath, &width, &height, &nrChannels, 0);
@@ -85,15 +85,14 @@ void renderText(vec3 position, float scaleX, float scaleY, float Alpha, mat4 vie
     mat4 model = mat4(1.0f);
     model = translate(model, position);
     model = glm::scale(model,vec3(scaleX,scaleY,1.0f));
-//    model = rotate(model,radians())
 
-    textShader->setMat4("model",model);
-    textShader->setMat4("view", view);
-    textShader->setMat4("projection", projection);
-    textShader->setFloat("Alpha",Alpha);
+    imageShader->setMat4("model", model);
+    imageShader->setMat4("view", view);
+    imageShader->setMat4("projection", projection);
+    imageShader->setFloat("alpha", alpha);
 
-    textShader->use();
-    glBindVertexArray(textVAO);
+    imageShader->use();
+    glBindVertexArray(imageVAO);
     glDrawArrays(GL_TRIANGLES,0,6);
     glBindVertexArray(0);
 }

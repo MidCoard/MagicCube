@@ -12,7 +12,7 @@ using namespace glm;
 bool isStartGameLoop();
 
 namespace Render {
-    mat4 getCubeState(int x, int y, int z);
+    mat4 * getCubeState(int x, int y, int z);
     bool isIgnoreKeyboardInput();
 
 
@@ -33,6 +33,8 @@ namespace Render {
     void rotate_Z_2(float degrees);
 
     void rotate_Z_3(float degrees);
+
+    void resetStates();
 }
 
 
