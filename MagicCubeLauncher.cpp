@@ -1,6 +1,4 @@
 #include "layers/LayerBridge.cpp"
-#include "layers/RenderLayer.h"
-#include "layers/LogicLayer.h"
 #include "util.h"
 
 using namespace std;

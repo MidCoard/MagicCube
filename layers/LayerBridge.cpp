@@ -1,5 +1,5 @@
-#include "Layers/LogicLayer.h"
-#include "Layers/RenderLayer.h"
+#include "layers/LogicLayer.h"
+#include "layers/RenderLayer.h"
 
 int count1 = 0;
 int count2 = 0;
