@@ -1,6 +1,3 @@
-//
-// Created by Ken on 2020/12/14.
-//
 #include "iostream"
 #include "cstdio"
 #include "solvers/SolverHandler.h"

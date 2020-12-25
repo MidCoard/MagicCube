@@ -1,5 +1,9 @@
 #include "Matrix.h"
 
+int directionsData[6][3] = {{0,-1,0},{0,1,0},{0,0,1},{0,0,-1},{1,0,0},{-1,0,0}};
+
+IntRow directions[] = {IntRow(directionsData[0],3),IntRow(directionsData[1],3),IntRow(directionsData[2],3),IntRow(directionsData[3],3),IntRow(directionsData[4],3),IntRow(directionsData[5],3)};
+
 Matrix::Matrix(int n, int m) {
     this->n = n;
     this->m = m;

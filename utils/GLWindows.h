@@ -8,10 +8,7 @@
 #include "Camera.h"
 
 #define ErrorCode -1
-
-mat4 transformMatrix = mat4(1.0f);
-
-const ColorRGBA WINDOW_COLOR = ColorRGBA(0.2f, 0.4f, 0.6f, 1.0f);
+extern mat4 transformMatrix;
 
 using namespace std;
 

@@ -29,6 +29,9 @@ public:
     float * getAsList() const;
     ~ColorRGBA();
     float getA() const;
+    float getR() const;
+    float getG() const;
+    float getB() const;
 };
 
 
@@ -39,5 +42,6 @@ const Color RED = Color(255,80,80);
 const Color YELLOW = Color(255,255,80);
 const Color WHITE = Color(230,230,230);
 
+const ColorRGBA WINDOW_COLOR = ColorRGBA(0.2f, 0.4f, 0.6f, 1.0f);
 
 #endif

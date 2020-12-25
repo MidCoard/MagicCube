@@ -1,6 +1,6 @@
-#include <io.h>
 #include <vector>
 #include <iostream>
+#include <io.h>
 #include <ctime>
 #include <Shader.h>
 #include <algorithm>
@@ -232,6 +232,10 @@ namespace Logic {
 
     bool isInShuffling() {
         return inShuffling;
+    }
+
+    bool isInSolving() {
+        return inSolving;
     }
 
     void clearBlocking() {

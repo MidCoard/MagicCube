@@ -1,5 +1,8 @@
 #include "GLWindows.h"
 
+
+mat4 transformMatrix = mat4(1.0f);
+
 GLWindow::GLWindow(int windowWidth,int windowHeight, char* windowTitle) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

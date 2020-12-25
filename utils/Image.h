@@ -14,28 +14,14 @@
 
 using namespace glm;
 
-Shader *imageShader;
-GLuint imageVAO, imageVBO, textureVBO;
-GLuint texture;
+extern Shader *imageShader;
+extern GLuint imageVAO, imageVBO, textureVBO;
+extern GLuint texture;
 
 
-vec3 imageVertices[] = {
-        vec3(-1.0f, 1.0f, 0.0f),
-        vec3(1.0f, 1.0f, 0.0f),
-        vec3(1.0f, -1.0f, 0.0f),
-        vec3(1.0f, -1.0f, 0.0f),
-        vec3(-1.0f, 1.0f, 0.0f),
-        vec3(-1.0f, -1.0f, 0.0f)
-};
+extern vec3 imageVertices[];
 
-vec2 textureVertices[] = {
-        vec2(0.0f,1.0f),
-        vec2(1.0f,1.0f),
-        vec2(1.0f,0.0f),
-        vec2(1.0f,0.0f),
-        vec2(0.0f,1.0f),
-        vec2(0.0f,0.0f)
-};
+extern vec2 textureVertices[];
 
 void initImage();
 void renderImage(vec3 position, float scaleX, float scaleY, float alpha, mat4 view, mat4 projection, char* imagePath);

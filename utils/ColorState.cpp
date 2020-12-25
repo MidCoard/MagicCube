@@ -79,12 +79,12 @@ void ColorState::print() {
     cout<<back<<endl;
 }
 
-char colors[6] = {'U','D','L','R','F','B'};
+char stateColors[6] = {'U','D','L','R','F','B'};
 
 void setColor(int pos,char color){
-    colors[pos] = color;
+    stateColors[pos] = color;
 }
 
 char getColor(int pos) {
-    return colors[pos];
+    return stateColors[pos];
 }

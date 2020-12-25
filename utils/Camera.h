@@ -11,15 +11,16 @@
 
 using namespace glm;
 
-const float YAW = -90.0f;//偏转角
-const float PITCH = 0.0f;//俯仰角
-const float SENSITIVITY = 0.05f;//鼠标灵敏度
-float ZOOM = 45.0f;//初始缩放值
 
-const vec3 CAMERA_POSITION = vec3(3.0f, 5.0f, 8.0f);//初始相机位置
+extern const float YAW;
+extern const float PITCH;
+extern const float SENSITIVITY;
 
-vec3 YAxis = vec3(0.0f, 1.0f, 0.0f);
-vec3 XAxis = -normalize(cross(vec3(CAMERA_POSITION),YAxis));//使用欧拉角旋转时的旋转轴 会随视角改变
+extern float ZOOM;
+
+extern vec3 YAxis;
+extern vec3 XAxis;
+extern const vec3 CAMERA_POSITION;
 
 class Camera {
 

@@ -1,6 +1,10 @@
 #include "RenderLayer.h"
 
 
+STATE cubeState = STOP;//记录旋转信息
+
+ROTATE_FLAG rotateFlag = NO_ROTATE;//标记要旋转的层数
+
 namespace Render {
 
 	bool startGameLoop = false;
@@ -242,7 +246,7 @@ namespace Render {
 
 		glGenBuffers(1, &ColorVBO);
 		glBindBuffer(GL_ARRAY_BUFFER, ColorVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Colors), Colors, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 		glVertexAttribPointer(locationValue, NUM_READIN, GL_FLOAT, GL_FALSE, STRIDE(3), OFFSET_NULL);
 		glEnableVertexAttribArray(locationValue++);//链接颜色
 

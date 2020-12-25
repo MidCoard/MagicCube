@@ -53,3 +53,15 @@ float * ColorRGBA::getAsList() const {
 float ColorRGBA::getA() const {
     return this->a;
 }
+
+float ColorRGBA::getR() const {
+    return Color::getR()/255.0;
+}
+
+float ColorRGBA::getG() const {
+    return Color::getG()/255.0;
+}
+
+float ColorRGBA::getB() const {
+    return Color::getB()/255.0;
+}

@@ -1,5 +1,27 @@
 #include "Image.h"
 
+Shader *imageShader;
+GLuint imageVAO, imageVBO, textureVBO;
+GLuint texture;
+
+vec3 imageVertices[] = {
+        vec3(-1.0f, 1.0f, 0.0f),
+        vec3(1.0f, 1.0f, 0.0f),
+        vec3(1.0f, -1.0f, 0.0f),
+        vec3(1.0f, -1.0f, 0.0f),
+        vec3(-1.0f, 1.0f, 0.0f),
+        vec3(-1.0f, -1.0f, 0.0f)
+};
+
+vec2 textureVertices[] = {
+        vec2(0.0f,1.0f),
+        vec2(1.0f,1.0f),
+        vec2(1.0f,0.0f),
+        vec2(1.0f,0.0f),
+        vec2(0.0f,1.0f),
+        vec2(0.0f,0.0f)
+};
+
 void initImage() {
     imageShader = new Shader("shaders/Image.vs", "shaders/Image.fs");
 

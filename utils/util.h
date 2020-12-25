@@ -4,6 +4,9 @@
 #include <chrono>
 #include <thread>
 #include <GLFW/glfw3.h>
+#include <cstdio>
+#include <string>
+#include <cstring>
 
 using namespace std;
 

@@ -27,7 +27,9 @@ enum STATE {
     ROTATE_Y,
     ROTATE_Z,
     UPDATE
-} cubeState = STOP;//记录旋转信息
+};
+
+extern STATE cubeState;//记录旋转信息
 
 enum ROTATE_FLAG {
     NO_ROTATE,
@@ -40,7 +42,8 @@ enum ROTATE_FLAG {
     ROTATE_Z_1,
     ROTATE_Z_2,
     ROTATE_Z_3
-} rotateFlag = NO_ROTATE;//标记要旋转的层数
+};
+extern ROTATE_FLAG rotateFlag;//标记要旋转的层数
 
 #define X_1 x > -(2*CUBE_LENGTH+GAP)-0.01f && x < -(2*CUBE_LENGTH+GAP)+0.01f
 #define X_2 x > -0.01f && x < 0.01f
