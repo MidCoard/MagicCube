@@ -81,7 +81,7 @@ namespace Render {
 
     Camera *camera;
 
-    void StartMenu();
+    void startMenu();
 
     void attribPointer();
 
@@ -189,7 +189,7 @@ namespace Render {
         initialize = true;
     }
 
-    void StartMenu() {
+    void startMenu() {
         projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
         view = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
@@ -198,7 +198,7 @@ namespace Render {
         renderImage(vec3(0, 2, 0), 3.3f, 1.1f, 1.0f, view, projection, (char *) "images/Title.png");
         renderImage(vec3(0, 0.2, 0), 2.79f, 0.93f, alpha, view, projection,
                     (char *) "images/Start.png");
-        renderImage(vec3(0, -2, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/Help.png");
+        renderImage(vec3(0, -2, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/help.png");
         renderImage(vec3(0, -3, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/Developer.png");
         if (fileSuccess)
             renderImage(vec3(-3, -3.8, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/SaveSucceed.png");
@@ -208,20 +208,20 @@ namespace Render {
         glfwPollEvents();
     };
 
-    void Pause() {
+    void pause() {
         projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
         view = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         renderImage(vec3(0, 1, 0), 4.5f, 1.5f, 1.0f, view, projection,
-                    (char *) "images/Pause.png");
-        renderImage(vec3(0, -1, 0), 2.4f, 0.8f, 1.0f, view, projection, (char *) "images/Help.png");
+                    (char *) "images/pause.png");
+        renderImage(vec3(0, -1, 0), 2.4f, 0.8f, 1.0f, view, projection, (char *) "images/help.png");
         renderImage(vec3(0, -2, 0), 2.1f, 0.7f, 1.0f, view, projection, (char *) "images/BackToTitle.png");
         glfwSwapBuffers(mainWindow->getWindow());
         glfwPollEvents();
     }
 
-    void Help() {
+    void help() {
         projection = perspective(radians(ZOOM), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
         view = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0, 0, 0), camera->WorldUp);
         glClearColor(WindowColor[R], WindowColor[G], WindowColor[B], WindowColor[A]);
@@ -610,7 +610,7 @@ namespace Render {
         camera->ProcessMouseScroll(yOffset);
     }
 
-    GLWindow *getWindow() {
+    GLWindow *getGLWindow() {
         return mainWindow;
     }
 

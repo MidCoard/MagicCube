@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
         double previous = getTime();
         double steps = 0.0;
         double last = 0;
-        while (!glfwWindowShouldClose(Render::getWindow()->getWindow())) {
+        while (!glfwWindowShouldClose(Render::getGLWindow()->getWindow())) {
             double loopStartTime = getTime();
             double elapsed = loopStartTime - previous;
             previous = loopStartTime;
