@@ -9,7 +9,7 @@ void initialize(char* state) {
 }
 
 void sync(double loopStartTime) {
-    float loopSlot = 1.0f / 300;
+    float loopSlot = 1.0f / 120;
     double endTime = loopStartTime + loopSlot;
     while(getTime() < endTime) {
         sleepMS(1);
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
         initialize(argv[1]);
     else initialize((char*)"");
     if (isInitialize()) {
-        double secsPerUpdate = 1.0 / 100.0;
+        double secsPerUpdate = 1.0 / 60.0;
         double previous = getTime();
         double steps = 0.0;
         double last = 0;

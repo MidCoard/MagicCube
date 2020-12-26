@@ -46,7 +46,7 @@ vec3 localCubeVertices[NUM_VERTICES] = {
         vec3(CUBE_LENGTH, CUBE_LENGTH, CUBE_LENGTH),
         vec3(CUBE_LENGTH, -CUBE_LENGTH, CUBE_LENGTH),
         vec3(-CUBE_LENGTH, -CUBE_LENGTH, CUBE_LENGTH),
-};//Local Space //One Cube
+};//Local Space //一个方块的坐标
 
 vec3 normalVector[NUM_VERTICES]={
         -STANDARD_Y_AXIS,

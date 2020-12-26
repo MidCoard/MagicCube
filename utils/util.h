@@ -15,4 +15,5 @@ double getTime();
 int exec(const char *in, char *out);
 bool endsWith(string str,string sub);
 int getAnswer(char sig);
+char getAnswer(int sig);
 #endif
