@@ -188,15 +188,15 @@ namespace Render {
 		glClearColor(WINDOW_COLOR.getR(), WINDOW_COLOR.getG(), WINDOW_COLOR.getB(), WINDOW_COLOR.getA());
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		float alpha = abs(sin(glfwGetTime()));
-		renderImage(vec3(0, 2, 0), 3.3f, 1.1f, 1.0f, view, projection, (char *) "images/Title.png");
-		renderImage(vec3(0, 0.2, 0), 2.79f, 0.93f, alpha, view, projection,
+		renderImage(vec3(0, 2, 0), vec3(3.3f, 1.1f, 1.0f), 1.0f, view, projection, (char *) "images/Title.png");
+		renderImage(vec3(0, 0.2, 0), vec3(2.79f, 0.93f, 1.0f), alpha, view, projection,
 		            (char *) "images/Start.png");
-		renderImage(vec3(0, -2, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/help.png");
-		renderImage(vec3(0, -3, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/Developer.png");
+		renderImage(vec3(0, -2, 0), vec3(1.8f, 0.6f,1.0f), 1.0f, view, projection, (char *) "images/help.png");
+		renderImage(vec3(0, -3, 0), vec3(1.8f, 0.6f, 1.0f), 1.0f, view, projection, (char *) "images/Developer.png");
 		if (openFileSuccess)
-			renderImage(vec3(-3, -3.8, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/SaveSucceed.png");
+			renderImage(vec3(-3, -3.8, 0), vec3(1.8f, 0.6f, 1.0f), 1.0f, view, projection, (char *) "images/SaveSucceed.png");
 		if (!openFileSuccess)
-			renderImage(vec3(-3, -3.8, 0), 1.8f, 0.6f, 1.0f, view, projection, (char *) "images/SaveFail.png");
+			renderImage(vec3(-3, -3.8, 0), vec3(1.8f, 0.6f, 1.0f), 1.0f, view, projection, (char *) "images/SaveFail.png");
 		glfwSwapBuffers(mainWindow->getWindow());
 		glfwPollEvents();
 	};
@@ -206,10 +206,10 @@ namespace Render {
 		view = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0, 0, 0), camera->getWorldUp());
 		glClearColor(WINDOW_COLOR.getR(), WINDOW_COLOR.getG(), WINDOW_COLOR.getB(), WINDOW_COLOR.getA());
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		renderImage(vec3(0, 1, 0), 4.5f, 1.5f, 1.0f, view, projection,
+		renderImage(vec3(0, 1, 0), vec3(4.5f, 1.5f, 1.0f), 1.0f, view, projection,
 		            (char *) "images/pause.png");
-		renderImage(vec3(0, -1, 0), 2.4f, 0.8f, 1.0f, view, projection, (char *) "images/help.png");
-		renderImage(vec3(0, -2, 0), 2.1f, 0.7f, 1.0f, view, projection, (char *) "images/BackToTitle.png");
+		renderImage(vec3(0, -1, 0), vec3(2.4f, 0.8f, 1.0f), 1.0f, view, projection, (char *) "images/help.png");
+		renderImage(vec3(0, -2, 0), vec3(2.1f, 0.7f, 1.0f), 1.0f, view, projection, (char *) "images/BackToTitle.png");
 		glfwSwapBuffers(mainWindow->getWindow());
 		glfwPollEvents();
 	}
@@ -220,10 +220,10 @@ namespace Render {
 		glClearColor(WINDOW_COLOR.getR(), WINDOW_COLOR.getG(), WINDOW_COLOR.getB(), WINDOW_COLOR.getA());
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		if (help)
-			renderImage(vec3(0, 0, 0), 4.2f, 4.2f, 1.0f, view, projection,
+			renderImage(vec3(0, 0, 0), vec3(4.2f, 4.2f, 1.0f), 1.0f, view, projection,
 			            (char *) "images/HelpContent.png");
 		else if (developer)
-			renderImage(vec3(0, 0, 0), 4.2f, 4.2f, 1.0f, view, projection,
+			renderImage(vec3(0, 0, 0), vec3(4.2f, 4.2f, 1.0f), 1.0f, view, projection,
 			            (char *) "images/DeveloperInfo.png");
 		glfwSwapBuffers(mainWindow->getWindow());
 		glfwPollEvents();
@@ -283,11 +283,11 @@ namespace Render {
 
 		if (Logic::isInShuffling())
 			for (int i = 0; i < Logic::getNowStep() + 1; i++)
-				renderImage(vec3(-1.5 + (3.0 / Logic::getSteps()) * i, -2, 2.5), 0.05f, 0.1f, 1.0f, view, projection,
+				renderImage(vec3(-1.8 + (3.6 / Logic::getSteps()) * i, -2, 2.5), vec3(0.05f, 0.1f, 1.0f), 1.0f, view, projection,
 				            (char *) "images/ProcessBar.png");
 		if (Logic::isInSolving())
 			for (int i = Logic::getStates() - Logic::getNowState() + 2; i > 0; i--)
-				renderImage(vec3(-1.5 + (3.0 / Logic::getStates()) * i, -2, 2.5), 0.03f, 0.1f, 1.0f, view, projection,
+				renderImage(vec3(-1.8 + (3.6 / Logic::getStates()) * i, -2, 2.5), vec3(0.025f, 0.1f, 1.0f), 1.0f, view, projection,
 				            (char *) "images/ProcessBar.png");
 
 		//进度条

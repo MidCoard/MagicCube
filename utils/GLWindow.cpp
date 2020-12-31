@@ -45,5 +45,6 @@ void frameBufferSizeCallback(GLFWwindow* window, int width, int height){
     transformMatrix = mat4(1.0f);
     if (height>width)
     	transformMatrix = scale(transformMatrix, vec3((float)width / (float)height, 1.0f, (float)width / (float)height));
-    else transformMatrix = scale(transformMatrix, vec3((float)height / (float)width, 1.0f, (float)height / (float)width));
+    else
+        transformMatrix = scale(transformMatrix, vec3((float)height / (float)width, 1.0f, (float)height / (float)width));
 }

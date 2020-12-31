@@ -360,6 +360,7 @@ namespace Logic {
         stateStr[66] = getColorState(2,0,2)->getRight();
         mode = -1;
         inSelecting = true;
+        cout<<stateStr<<endl;
         if (isSelect)cout<<"Please press relative numbers to select one mode"<<endl;
 
     }

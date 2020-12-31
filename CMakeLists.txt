@@ -3,8 +3,8 @@ project(MagicCube)
 
 set(CMAKE_CXX_STANDARD 14)
 
-MATH(EXPR stack_size "1024*1024*1024")
-set(CMAKE_EXE_LINKER_FLAGS "-Wl,--stack,${stack_size}")
+set(CMAKE_CXX_FLAGS "-static ${CMAKE_CXX_FLAGS}")
+
 set(SOURCE_FILES MagicCubeLauncher.cpp)
 
 include_directories(include)

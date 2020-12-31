@@ -51,7 +51,7 @@ void initImage() {
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, WINDOW_COLOR.getAsList());//绑定纹理
 }
 
-void renderImage(vec3 position, float scaleX, float scaleY, float alpha, mat4 view, mat4 projection, char* imagePath) {
+void renderImage(vec3 position, vec3 scale, float alpha, mat4 view, mat4 projection, char* imagePath) {
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(imagePath, &width, &height, &nrChannels, 0);
@@ -68,7 +68,7 @@ void renderImage(vec3 position, float scaleX, float scaleY, float alpha, mat4 vi
     stbi_image_free(data);
     mat4 model = mat4(1.0f);
     model = translate(model, position);
-    model = glm::scale(model,vec3(scaleX,scaleY,1.0f));
+    model = glm::scale(model,scale);
 
     imageShader->setMat4("model", model);
     imageShader->setMat4("view", view);

@@ -24,5 +24,5 @@ extern vec3 imageVertices[];
 extern vec2 textureVertices[];
 
 void initImage();
-void renderImage(vec3 position, float scaleX, float scaleY, float alpha, mat4 view, mat4 projection, char* imagePath);
+void renderImage(vec3 position, vec3 scale, float alpha, mat4 view, mat4 projection, char* imagePath);
 #endif
